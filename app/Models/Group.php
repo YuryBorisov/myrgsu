@@ -11,4 +11,6 @@ class Group extends Model
 
     protected $fillable = ['short_name', 'full_name', 'faculty_id'];
 
+
+
 }

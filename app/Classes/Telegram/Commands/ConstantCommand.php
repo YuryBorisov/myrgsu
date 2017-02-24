@@ -22,7 +22,7 @@ class ConstantCommand
 
     const SELECT_MY_SCHEDULE_FACULTY = 101;
 
-    const MY_SCHEDULE_TODAY = 500;
+    const MY_SCHEDULE_TODAY = 'today';
 
     const MY_SCHEDULE_WEEK = 501;
 

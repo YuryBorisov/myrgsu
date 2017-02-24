@@ -5,6 +5,7 @@ namespace App\Classes\Telegram\Commands;
 use App\Repositories\FacultyRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserTelegramRepository;
+use Illuminate\Support\Facades\Log;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Entities\Update;
@@ -113,14 +114,42 @@ class ScheduleCommand extends UserCommand
                 break;
             case ConstantCommand::MY_SCHEDULE_TODAY:
                 $userTelegram = UserTelegramRepository::instance()->get($chatId);
+                $firstName = $this->update->getCallbackQuery()->getMessage()->getChat()->getFirstName();
+                $message = null;
                 if($userTelegram['group_id'])
                 {
+                    $date = explode('-', date('d-m-Y'));
+                    $subjects = GroupRepository::instance()->getActiveSubjectDay($userTelegram['group_id'], date("w", mktime(0, 0, 0, $date[0], $date[1], $date[2])) - 1);
+                    Log::info(date("w", mktime(0, 0, 0, $date[0], $date[1], $date[2])));
+                    if($subjects['subjects'])
+                    {
+                        $message = $subjects['week']['name'] . "\xF0\x9F\x98\x8F\n" .
+                            $subjects['day']['name'] . " ({$date[0]}-{$date[1]}-{$date[2]})\n\n";
 
+                        foreach ($subjects['subjects'] as $subject)
+                        {
+                            $message .= $subject['time']['id'] . " ({$subject['time']['name']})" .
+                            "\nДисциплина: " .$subject['name'] . "\n" .
+                            "Адрес: {$subject['address']['name']}\nАудитория: {$subject['address']['room']}\n" .
+                            "Преподаватель: {$subject['teacher']['name']}\n\n";
+                        }
+                        $message .= 'Вызвать меню /menu';
+                    }
+                    else
+                    {
+                        $message = $subjects['week']['name'] . "\xF0\x9F\x98\x8F\n" .
+                            $subjects['day']['name'] . " ({$date[0]}-{$date[1]}-{$date[2]})\n".
+                            $firstName . ", у Вас сегодня нет занятий \xF0\x9F\x98\x82";
+                    }
                 }
                 else
                 {
-
+                    $message = $firstName .', для начала выбери группу';
                 }
+                Request::sendMessage([
+                    'text' => $message,
+                    'chat_id' => $chatId
+                ]);
                 break;
             case ConstantCommand::MY_SCHEDULE_WEEK:
                 break;

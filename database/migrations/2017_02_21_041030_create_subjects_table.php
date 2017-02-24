@@ -22,7 +22,6 @@ class CreateSubjectsTable extends Migration
             $table->tinyInteger('time_id')->unsigned();
             $table->smallInteger('address_id')->unsigned();
             $table->smallInteger('teacher_id')->unsigned();
-            $table->timestamps();
         });
     }
 
