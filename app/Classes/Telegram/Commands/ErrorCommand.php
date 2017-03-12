@@ -9,17 +9,20 @@ use Longman\TelegramBot\Telegram;
 
 class ErrorCommand extends MyCommand
 {
-    public function __construct(Telegram $telegram, Update $update)
+
+    protected $message;
+
+    public function __construct(Telegram $telegram, Update $update, $message)
     {
         parent::__construct($telegram, $update);
+        $this->message = $message;
     }
 
     public function execute()
     {
-        $data = [
+        return Request::sendMessage([
             'chat_id'      => $this->chatId,
-            'text'         => $this->firstName.', увы я не знаю такой команды '."\xF0\x9F\x98\x82"
-        ];
-        return Request::sendMessage($data);
+            'text'         => $this->firstName.$this->message
+        ]);
     }
 }

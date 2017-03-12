@@ -116,8 +116,11 @@ class TelegramController extends Controller
                             $command = new FeedbackCommand($telegram, $update);
                             $command->execute();
                             break;
+                        case 'teachers':
+                            (new ErrorCommand($telegram, $update, ", пока не работает, нет времени реализовать \xF0\x9F\x98\x94"))->execute();
+                            break;
                         default:
-                            (new ErrorCommand($telegram, $update))->execute();
+                            (new ErrorCommand($telegram, $update, ", увы я не знаю такой команды \xF0\x9F\x98\x82"))->execute();
                             break;
                     }
                     break;
@@ -190,9 +193,6 @@ class TelegramController extends Controller
                         case 'settings':
                             $command = new SettingsCommand($telegram, $update);
                             break;
-                        case 'teachers':
-                            $command = new TeachersCommand($telegram, $update);
-                            break;
                         case 'feedback':
                             $command = new FeedbackCommand($telegram, $update);
                             break;
@@ -208,14 +208,10 @@ class TelegramController extends Controller
                             $command = new CommandsCommand($telegram, $update);
                             break;
                         case 'teachers':
-                            if(isset($arr[1]))
-                            {
-
-                            }
-                            else
-                            {
-
-                            }
+                            $command = new ErrorCommand($telegram, $update, ", пока не работает, нет времени реализовать \xF0\x9F\x98\x94");
+                            break;
+                        case 'audience':
+                            $command = new ErrorCommand($telegram, $update, ", пока не работает, нет времени реализовать \xF0\x9F\x98\x94");
                             break;
                     }
                     $command->execute();
