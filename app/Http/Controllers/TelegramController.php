@@ -91,6 +91,13 @@ class TelegramController extends Controller
                                 }
                                 UserTelegram::create($data);
                             }
+                            else
+                            {
+                                if($update->getMessage()->getChat()->getUsername() != null)
+                                {
+                                    UserTelegram::update(['name' => $update->getMessage()->getChat()->getUsername()])->whereId($chatId);
+                                }
+                            }
                             $start = new StartCommand($telegram, $update);
                             $start->execute();
                             $mainMenuCommand = new MainMenuCommand($telegram, $update);
