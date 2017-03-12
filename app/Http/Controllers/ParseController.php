@@ -23,7 +23,9 @@ class ParseController extends Controller
 
         ini_set('memory_limit', '-1');
 
-        $url = 'http://rgsu.net/for-students/timetable/timetable.html?template=&action=index&admin_mode=&f_Faculty=2&group=';
+        set_time_limit(10000);
+
+        $url = 'http://rgsu.net/for-students/timetable/timetable.html?template=&action=index&admin_mode=&f_Faculty=19&group=';
 
         $html = new \Yangqi\Htmldom\Htmldom($url);
 
@@ -40,7 +42,7 @@ class ParseController extends Controller
             $nameGroup = ($groupRepository = GroupRepository::instance()->getByName($nameGroup)) ?
                 $groupRepository['id'] : Group::create([
                     'short_name' => $nameGroup,
-                    'faculty_id' => 2
+                    'faculty_id' => 13
                 ])->id;
             foreach ($html->find("div[class=small-12 large-6 columns]") as $h)
             {
@@ -68,20 +70,28 @@ class ParseController extends Controller
                                 {
                                     case 0:
                                         $subject[$nameGroup][$w][$dayId][$i]['time_id'] = TimeRepository::instance()
-                                            ->getByName($tds[$i2]->find('span[class=time-start]')[0]->innertext . '-'
-                                                .$tds[$i2]->find('span[class=time-end]')[0]->innertext)['id'];
+                                            ->getByName(trim($tds[$i2]->find('span[class=time-start]')[0]->innertext . '-'
+                                                .$tds[$i2]->find('span[class=time-end]')[0]->innertext))['id'];
                                         break;
                                     case 1:
+                                        /*
                                         $arr = explode('-', $tds[$i2]->innertext);
                                         if($arr[1] == 'Спортивный зал')
                                         {
                                             $arr[1] = 15937;
+                                        } else if($arr[1] == 'актовый зал' || $arr[1] == 'Актовый зал')
+                                        {
+                                            $arr[1] = 15370;
+                                        } else if($arr[1] = 'ВП4/12 СС БАССЕЙН') {
+                                            $arr[1] = 15214;
                                         }
+                                        */
+                                        $adr = trim($tds[$i2]->innertext);
                                         $subject[$nameGroup][$w][$dayId][$i]['address_id'] =
-                                            ($addressRepository = AddressRepository::instance()->getWhereNameAndRoom($arr[0], $arr[1]))
+                                            ($addressRepository = AddressRepository::instance()->getWhereName($adr))
                                             ? $addressRepository['id']
                                                 :
-                                                Address::create(['name' => $arr[0], 'room' => $arr[1]])->id;
+                                                Address::create(['name' => $adr])->id;
                                         break;
                                     case 2:
                                         $subject[$nameGroup][$w][$dayId][$i]['subject'] = $tds[$i2]->innertext;
@@ -121,7 +131,7 @@ class ParseController extends Controller
                             'week_id' => $sWeekKeys[$iWeek],
                             'day_id' => $sDayKeys[$iDay],
                             'group_id' => $sGroupKeys[$iGroup],
-                            'time_id' => $item['time_id'],
+                            'time_id' => isset($item['time_id']) ?  $item['time_id'] : null,
                             'address_id' => $item['address_id'],
                             'teacher_id' => $item['teacher_id']
                         ];

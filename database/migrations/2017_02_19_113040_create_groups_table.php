@@ -16,7 +16,7 @@ class CreateGroupsTable extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->smallIncrements('id');
             $table->smallInteger('faculty_id')->unsigned();
-            $table->string('short_name', 20);
+            $table->string('short_name', 30);
             $table->string('full_name', 50)->nullable();
         });
     }

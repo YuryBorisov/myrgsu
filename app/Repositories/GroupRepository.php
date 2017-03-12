@@ -18,6 +18,8 @@ class GroupRepository extends BaseRepository
 
     protected $prefixGetSubjectDay = 'day';
 
+    protected $prefixGetSubjectWeek = 'week';
+
     public function getActiveSubjectDay($groupId, $dayId)
     {
         if(!$this->isById($key = $groupId . $this->prefixGetSubjectDay . $dayId))
@@ -29,6 +31,22 @@ class GroupRepository extends BaseRepository
                 ];
                 $r['week'] = WeekRepository::instance()->active();
                 $r['day'] = DayRepository::instance()->get($dayId);
+                $this->addById($key, $r);
+                return $r;
+            }
+            return false;
+        }
+        return $this->getCachedById()->get($key);
+    }
+
+    public function getActiveSubjectWeek($groupId)
+    {
+        if(!$this->isById($key = $groupId . $this->prefixGetSubjectWeek))
+        {
+            if($r = Subject::with('day', 'time', 'address', 'teacher')->whereGroupIdAndWeekId($groupId, WeekRepository::instance()->active()['id'])->get())
+            {
+                $r = $r->toArray();
+                $r['subjects'] = $r;
                 $this->addById($key, $r);
                 return $r;
             }

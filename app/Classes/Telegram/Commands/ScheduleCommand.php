@@ -5,6 +5,7 @@ namespace App\Classes\Telegram\Commands;
 use App\Repositories\FacultyRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\UserTelegramRepository;
+use App\Repositories\WeekRepository;
 use Illuminate\Support\Facades\Log;
 use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\InlineKeyboard;
@@ -12,7 +13,7 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 
-class ScheduleCommand extends UserCommand
+class ScheduleCommand extends MyCommand
 {
 
     protected $prefix;
@@ -31,7 +32,6 @@ class ScheduleCommand extends UserCommand
      */
     public function execute()
     {
-        $chatId = $this->update->getCallbackQuery()->getMessage()->getChat()->getId();
         $arr = [
             [
                 [
@@ -43,7 +43,7 @@ class ScheduleCommand extends UserCommand
         switch ($this->prefix)
         {
             case ConstantCommand::MY:
-                $userTelegram = UserTelegramRepository::instance()->getById($chatId);
+                $userTelegram = UserTelegramRepository::instance()->get($this->chatId);
                 if($userTelegram['faculty_id'])
                 {
                     $arr[] = [
@@ -69,15 +69,17 @@ class ScheduleCommand extends UserCommand
                         $arr[] = [
                             [
                                 'text' => 'Показать за неделю',
-                                'callback_data' => 'dsfdsf'
+                                'callback_data' => 'my_schedule_week'
                             ]
                         ];
+                        /*
                         $arr[] = [
                             [
                                 'text' => ($userTelegram['call'] ? 'ВЫКЛ' : 'ВКЛ') . ' уведомления',
                                 'callback_data' => 'call_schedule',
                             ]
                         ];
+                        */
                     }
                     else
                     {
@@ -105,53 +107,100 @@ class ScheduleCommand extends UserCommand
                     ];
                 }
                 $text = 'Моё расписание';
-                return Request::editMessageText([
-                    'chat_id'      => $chatId,
-                    'text'         => $text,
-                    'reply_markup' => (new \ReflectionClass(InlineKeyboard::class))->newInstanceArgs($arr),
-                    'message_id' => $this->update->getCallbackQuery()->getMessage()->getMessageId()
-                ]);
+                if(ConstantCommand::MESSAGE == $this->typeMessage)
+                {
+                    return Request::sendMessage([
+                        'chat_id'      => $this->chatId,
+                        'text'         => $text,
+                        'reply_markup' => (new \ReflectionClass(InlineKeyboard::class))->newInstanceArgs($arr)
+                    ]);
+                }
+                else
+                {
+                    return Request::editMessageText([
+                        'chat_id'      => $this->chatId,
+                        'text'         => $text,
+                        'reply_markup' => (new \ReflectionClass(InlineKeyboard::class))->newInstanceArgs($arr),
+                        'message_id' => $this->update->getCallbackQuery()->getMessage()->getMessageId()
+                    ]);
+                }
                 break;
             case ConstantCommand::MY_SCHEDULE_TODAY:
-                $userTelegram = UserTelegramRepository::instance()->get($chatId);
-                $firstName = $this->update->getCallbackQuery()->getMessage()->getChat()->getFirstName();
+                $userTelegram = UserTelegramRepository::instance()->get($this->chatId);
                 $message = null;
                 if($userTelegram['group_id'])
                 {
                     $date = explode('-', date('d-m-Y'));
-                    $subjects = GroupRepository::instance()->getActiveSubjectDay($userTelegram['group_id'], date("w", mktime(0, 0, 0, $date[0], $date[1], $date[2])) - 1);
-                    Log::info(date("w", mktime(0, 0, 0, $date[0], $date[1], $date[2])));
+                    $subjects = GroupRepository::instance()->getActiveSubjectDay($userTelegram['group_id'], \Carbon\Carbon::now()->dayOfWeek);
                     if($subjects['subjects'])
                     {
-                        $message = $subjects['week']['name'] . "\xF0\x9F\x98\x8F\n" .
+                        $message = '<b>' . $subjects['week']['name'] . "</b>\xF0\x9F\x98\x8F\n" .
                             $subjects['day']['name'] . " ({$date[0]}-{$date[1]}-{$date[2]})\n\n";
-
                         foreach ($subjects['subjects'] as $subject)
                         {
-                            $message .= $subject['time']['id'] . " ({$subject['time']['name']})" .
-                            "\nДисциплина: " .$subject['name'] . "\n" .
-                            "Адрес: {$subject['address']['name']}\nАудитория: {$subject['address']['room']}\n" .
-                            "Преподаватель: {$subject['teacher']['name']}\n\n";
+                            $message .= '<b>' . $subject['time']['id'] . "</b> ({$subject['time']['name']})" .
+                            "\n<b>Дисциплина:</b> " .$subject['name'] . "\n" .
+                            "<b>Адрес:</b> {$subject['address']['name']}\n" .
+                            "<b>Преподаватель:</b> {$subject['teacher']['name']}\n\n";
                         }
-                        $message .= 'Вызвать меню /menu';
+                        $message .= $this->afterMessage();
                     }
                     else
                     {
-                        $message = $subjects['week']['name'] . "\xF0\x9F\x98\x8F\n" .
-                            $subjects['day']['name'] . " ({$date[0]}-{$date[1]}-{$date[2]})\n".
-                            $firstName . ", у Вас сегодня нет занятий \xF0\x9F\x98\x82";
+                        $message = '<b>' . $subjects['week']['name'] . "</b>\xF0\x9F\x98\x8F\n" .
+                            $this->firstName . ", у Вас сегодня нет занятий \xF0\x9F\x98\x82" . $this->afterMessage();
                     }
                 }
                 else
                 {
-                    $message = $firstName .', для начала выбери группу';
+                    $message = $this->firstName .', для начала выбери группу' .$this->afterMessage();
                 }
                 Request::sendMessage([
                     'text' => $message,
-                    'chat_id' => $chatId
+                    'chat_id' => $this->chatId,
+                    'parse_mode' => 'HTML'
                 ]);
                 break;
             case ConstantCommand::MY_SCHEDULE_WEEK:
+                $message = 'Вы не выбрали группу';
+                if($this->user['group_id'] != 0)
+                {
+                    $subjects = GroupRepository::instance()->getActiveSubjectWeek($this->user['group_id']);
+                    if($subjects['subjects'])
+                    {
+
+                        //$message = '<b>' . $subjects['week']['name'] . "</b>\xF0\x9F\x98\x8F\n";
+                        $message = [];
+                        $text = WeekRepository::instance()->active()['name']." \xF0\x9F\x98\x8F\n\n";
+                        foreach ($subjects['subjects'] as $subject)
+                        {
+                            $message[$subject['day']['name']][] = '<b>' . $subject['time']['id'] . "</b> ({$subject['time']['name']})" .
+                                "\n<b>Дисциплина:</b> " .$subject['name'] . "\n" .
+                               "<b>Адрес:</b> {$subject['address']['name']}\n" .
+                                "<b>Преподаватель:</b> {$subject['teacher']['name']}\n";
+                        }
+                        for($i = 0, $keys = array_keys($message), $j = count($keys); $i < $j; $i++)
+                        {
+                            $text .= "<b>".$keys[$i]."</b>\n";
+                            foreach ($message[$keys[$i]] as $item)
+                            {
+                                $text .= $item;
+                            }
+                            $text .= "\n";
+                        }
+                        $message = $text.$this->afterMessage(false);
+                    }
+                    else
+                    {
+                        $message = '<b>' . $subjects['week']['name'] . "</b>\xF0\x9F\x98\x8F\n" .
+                            $this->firstName . ", у Вас на этой недели нет занятий \xF0\x9F\x98\x82" . $this->afterMessage();
+                    }
+                }
+                return Request::sendMessage([
+                    'chat_id' => $this->chatId,
+                    'text' => $message,
+                    'parse_mode' => 'HTML'
+                ]);
                 break;
         }
     }

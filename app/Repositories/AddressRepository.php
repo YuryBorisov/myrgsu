@@ -12,38 +12,19 @@ class AddressRepository extends BaseRepository
 
     protected $cacheName = 'address';
 
-    protected function getCachedWhereNameAndRoom()
-    {
-        return Cache::tags([$this->cacheName, 'nameRoom']);
-    }
-
     protected function getCachedWhereName()
     {
         return Cache::tags([$this->cacheName, 'name']);
-    }
-
-    public function getWhereNameAndRoom($name, $room)
-    {
-        if(!$this->getCachedWhereNameAndRoom()->has($str = $name . $room))
-        {
-            if($r = Address::whereName($name)->whereRoom($room)->first(['*']))
-            {
-                $r = $r->toArray();
-                $this->getCachedWhereNameAndRoom()->forever($str, $r);
-                return $r;
-            }
-            return false;
-        }
-        return $this->getCachedWhereNameAndRoom()->get($str);
     }
 
     public function getWhereName($name)
     {
         if(!$this->getCachedWhereName()->has($name))
         {
-            if($r = call_user_func([$this->model, 'whereName'], $name)->get())
+            if($r = call_user_func([$this->model, 'whereName'], $name)->first())
             {
                 $r = $r->toArray();
+                $this->getCachedWhereName()->forever($name, $r);
                 return $r;
             }
             return false;

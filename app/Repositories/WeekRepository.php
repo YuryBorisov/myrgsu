@@ -39,16 +39,6 @@ class WeekRepository extends BaseRepository
                 break;
             }
         }
-        /*
-         * if(date("w", mktime(0, 0, 0, date("m"), date("d"), date("Y"))) == 1)
-        {
-            Week::find($active['id'])->update(['active' => false]);
-            Week::find($active['id'] == 1 ? 2 : 1)->update(['active' => true]);
-            $this->clear(0, 'all');
-            $active = $this->active();
-        }
-         */
-
         return $active;
     }
 

@@ -1,18 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: root
- * Date: 18.02.17
- * Time: 12:44
- */
 
 namespace App\Classes\Telegram\Commands;
 
 
-use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Request;
 
-class FeedbackCommand extends MyCommand
+class CommandsCommand extends MyCommand
 {
 
     /**
@@ -23,9 +16,9 @@ class FeedbackCommand extends MyCommand
      */
     public function execute()
     {
-        Request::sendMessage([
+        return Request::sendMessage([
             'chat_id' => $this->chatId,
-            'text' => 'Есть предложения или замечания?' . "\xF0\x9F\x98\x89\nПиши @yury_borisov".$this->afterMessage()
+            'text' => $this->afterMessage(false)
         ]);
     }
 }

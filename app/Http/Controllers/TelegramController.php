@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Telegram\Commands\CallCommand;
+use App\Classes\Telegram\Commands\CommandsCommand;
 use App\Classes\Telegram\Commands\ConstantCommand;
+use App\Classes\Telegram\Commands\ErrorCommand;
 use App\Classes\Telegram\Commands\FacultyCommand;
 use App\Classes\Telegram\Commands\FeedbackCommand;
 use App\Classes\Telegram\Commands\GroupCommand;
@@ -93,6 +95,30 @@ class TelegramController extends Controller
                             $mainMenuCommand = new MainMenuCommand($telegram, $update);
                             $mainMenuCommand->execute();
                             break;
+                        case 'schedule':
+                            break;
+                        case 'my_schedule':
+                            $command = new ScheduleCommand($telegram, $update, ConstantCommand::MY);
+                            $command->execute();
+                            break;
+                        case 'my_schedule_today':
+                            $command = new ScheduleCommand($telegram, $update, ConstantCommand::MY_SCHEDULE_TODAY);
+                            $command->execute();
+                            break;
+                        case 'my_schedule_week':
+                            $command = new ScheduleCommand($telegram, $update, ConstantCommand::MY_SCHEDULE_WEEK);
+                            $command->execute();
+                            break;
+                        case 'commands':
+                            (new CommandsCommand($telegram, $update))->execute();
+                            break;
+                        case 'feedback':
+                            $command = new FeedbackCommand($telegram, $update);
+                            $command->execute();
+                            break;
+                        default:
+                            (new ErrorCommand($telegram, $update))->execute();
+                            break;
                     }
                     break;
                 case ConstantCommand::CALLBACK_QUERY:
@@ -118,6 +144,9 @@ class TelegramController extends Controller
                                         {
                                             case ConstantCommand::MY_SCHEDULE_TODAY:
                                                 $command = new ScheduleCommand($telegram, $update, ConstantCommand::MY_SCHEDULE_TODAY);
+                                                break;
+                                            case ConstantCommand::MY_SCHEDULE_WEEK:
+                                                $command = new ScheduleCommand($telegram, $update, ConstantCommand::MY_SCHEDULE_WEEK);
                                                 break;
                                         }
                                     }
@@ -158,8 +187,6 @@ class TelegramController extends Controller
                                     break;
                             }
                             break;
-                        case 'schedule':
-                            break;
                         case 'settings':
                             $command = new SettingsCommand($telegram, $update);
                             break;
@@ -175,6 +202,19 @@ class TelegramController extends Controller
                                 case 'schedule':
                                     $command = new CallCommand($telegram, $update);
                                     break;
+                            }
+                            break;
+                        case 'commands':
+                            $command = new CommandsCommand($telegram, $update);
+                            break;
+                        case 'teachers':
+                            if(isset($arr[1]))
+                            {
+
+                            }
+                            else
+                            {
+
                             }
                             break;
                     }

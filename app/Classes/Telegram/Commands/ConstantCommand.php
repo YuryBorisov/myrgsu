@@ -24,6 +24,6 @@ class ConstantCommand
 
     const MY_SCHEDULE_TODAY = 'today';
 
-    const MY_SCHEDULE_WEEK = 501;
+    const MY_SCHEDULE_WEEK = 'week';
 
 }

@@ -13,16 +13,24 @@
 
 use App\Models\Faculty;
 
-Route::get('/', function () {
-    //Faculty::truncate();
-    //Faculty::create([
-   //     'short_name' => 'ФУ',
-     //   'full_name' => 'Факультет управления',
-    //]);
+Route::get('/ttt', function () {
+    $str = "advertising platform";
+    $arr = [];
+    for ($i = 0; $i < 1000; $i++)
+    {
+        $st = '';
+        for($j = 0; $j < 5; $j++)
+        {
+            $st .= $str[rand(0, strlen($str) - 1)];
+        }
+        $arr[] = $st;
+    }
+    header('Content-type: text/plaint');
+    print_r($arr);
 });
 
 Route::group(['prefix' => 'telegram'], function (){
-    Route::match(['post', 'get'], '/', ['as' => 'telegram.message', 'uses' => 'TelegramController@message']);
+    Route::match(['post', 'get'], '334312989:AAEWEJVmWrh6XkNHKWdo_1waxE0r2G7eTjo', ['as' => 'telegram.message', 'uses' => 'TelegramController@message']);
     Route::group(['prefix' => 'hook'], function (){
         Route::get('/', ['as' => 'telegram.hook', 'uses' => 'TelegramController@hook']);
         Route::get('set', ['as' => 'telegram.hook.set', 'uses' => 'TelegramController@setWebhook']);
@@ -30,10 +38,4 @@ Route::group(['prefix' => 'telegram'], function (){
     });
 });
 
-Route::get('/parse', ['as' => 'parse', 'uses' => 'ParseController@parse']);
-
-/*
- * $API_KEY = 'your_bot_api_key';
-$BOT_NAME = 'namebot';
-$hook_url = 'https://yourdomain/path/to/hook.php';
- */
+//Route::get('/parse', ['as' => 'parse', 'uses' => 'ParseController@parse']);

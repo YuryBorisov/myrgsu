@@ -9,7 +9,7 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 
-class GroupCommand extends UserCommand
+class GroupCommand extends MyCommand
 {
 
     protected $prefix;
@@ -28,8 +28,7 @@ class GroupCommand extends UserCommand
      */
     public function execute()
     {
-        $chatId = $this->update->getCallbackQuery()->getMessage()->getChat()->getId();
-        $userTelegram = UserTelegramRepository::instance()->get($chatId);
+        $userTelegram = UserTelegramRepository::instance()->get($this->chatId);
         $groupsButton = [];
         if($this->prefix == ConstantCommand::MY)
         {
@@ -55,10 +54,10 @@ class GroupCommand extends UserCommand
                     ' сначала выбери факультет ' . "\xF0\x9F\x98\xA1"))->execute();
             }
             Request::editMessageText([
-                'chat_id' => $this->update->getCallbackQuery()->getMessage()->getChat()->getId(),
+                'chat_id' => $this->chatId,
                 'text' => 'Группы',
                 'reply_markup' => (new \ReflectionClass(InlineKeyboard::class))->newInstanceArgs($groupsButton),
-                'message_id' => $this->update->getCallbackQuery()->getMessage()->getMessageId()
+                'message_id' => $this->messageId
             ]);
         }
     }

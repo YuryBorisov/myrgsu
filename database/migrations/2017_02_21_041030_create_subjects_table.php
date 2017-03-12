@@ -19,9 +19,9 @@ class CreateSubjectsTable extends Migration
             $table->tinyInteger('week_id')->unsigned();
             $table->tinyInteger('day_id')->unsigned();
             $table->smallInteger('group_id');
-            $table->tinyInteger('time_id')->unsigned();
-            $table->smallInteger('address_id')->unsigned();
-            $table->smallInteger('teacher_id')->unsigned();
+            $table->tinyInteger('time_id')->unsigned()->nullable();
+            $table->smallInteger('address_id')->unsigned()->nullable();
+            $table->smallInteger('teacher_id')->unsigned()->nullable();
         });
     }
 

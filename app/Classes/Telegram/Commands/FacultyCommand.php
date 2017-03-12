@@ -10,7 +10,7 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 
-class FacultyCommand extends UserCommand
+class FacultyCommand extends MyCommand
 {
 
     protected $prefix;
@@ -41,10 +41,10 @@ class FacultyCommand extends UserCommand
         }
         $inlineKeyboard = (new \ReflectionClass(InlineKeyboard::class))->newInstanceArgs($faculties);
         $data = [
-            'chat_id'      => $this->update->getCallbackQuery()->getMessage()->getChat()->getId(),
+            'chat_id'      => $this->chatId,
             'text'         => 'Факультеты',
             'reply_markup' => $inlineKeyboard,
-            'message_id' => $this->update->getCallbackQuery()->getMessage()->getMessageId()
+            'message_id' => $this->messageId
         ];
         return Request::editMessageText($data);
     }

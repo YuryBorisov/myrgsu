@@ -9,7 +9,7 @@ class Address extends Model
 
     protected $table = 'addresses';
 
-    protected $fillable = ['name', 'room'];
+    protected $fillable = ['name'];
 
     public $timestamps = false;
 

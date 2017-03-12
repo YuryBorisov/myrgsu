@@ -7,24 +7,18 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 
-class ErrorCommand extends UserCommand
+class ErrorCommand extends MyCommand
 {
-
-    protected $message;
-
-    public function __construct(Telegram $telegram, Update $update, $message)
+    public function __construct(Telegram $telegram, Update $update)
     {
         parent::__construct($telegram, $update);
-        $this->message = $message;
     }
 
     public function execute()
     {
-        $chatId = $this->update->getUpdateType() == 'message' ? $this->getMessage()->getChat()->getId() :
-            $this->update->getCallbackQuery()->getMessage()->getChat()->getId();
         $data = [
-            'chat_id'      => $chatId,
-            'text'         => $this->message
+            'chat_id'      => $this->chatId,
+            'text'         => $this->firstName.', увы я не знаю такой команды '."\xF0\x9F\x98\x82"
         ];
         return Request::sendMessage($data);
     }

@@ -9,7 +9,7 @@ use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 
-class MainMenuCommand extends UserCommand
+class MainMenuCommand extends MyCommand
 {
 
     /**
@@ -25,28 +25,28 @@ class MainMenuCommand extends UserCommand
                 ['text' => 'Моё расписание', 'callback_data' => 'my_schedule']
             ],
             [
-                ['text' => 'Расписание', 'callback_data' => 'schedule'],
+                //['text' => 'Расписание', 'callback_data' => 'schedule'],
+                ['text' => 'Аудитории', 'callback_data' => 'audience'],
                 ['text' => 'Преподаватели', 'callback_data' => 'teachers']
             ]
             ,
             [
-                ['text' => 'Аудитории', 'callback_data' => 'audience'],
+                ['text' => 'Команды', 'callback_data' => 'commands'],
                 ['text' => 'Feedback', 'callback_data' => 'feedback']
             ]
         );
         $data = [
             'text'         => 'Главное меню',
-            'reply_markup' => $inlineKeyboard
+            'reply_markup' => $inlineKeyboard,
+            'chat_id' => $this->chatId
         ];
-        if($this->update->getUpdateType() == 'message')
+        if($this->typeMessage == ConstantCommand::MESSAGE)
         {
-            $data['chat_id'] = $this->getMessage()->getChat()->getId();
             return Request::sendMessage($data);
         }
         else
         {
-            $data['chat_id'] = $this->update->getCallbackQuery()->getMessage()->getChat()->getId();
-            $data['message_id'] = $this->update->getCallbackQuery()->getMessage()->getMessageId();
+            $data['message_id'] = $this->messageId;
             return Request::editMessageText($data);
         }
     }
