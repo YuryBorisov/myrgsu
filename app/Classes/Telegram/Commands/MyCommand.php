@@ -43,7 +43,7 @@ abstract class MyCommand extends UserCommand
 
     public function afterMessage($transfer = true)
     {
-        $message = ($transfer ?  "\n\n" : ""). "/menu - Главное меня";
+        $message = ($transfer ?  "\n\n" : ""). "/menu - Главное меню";
         if($this->user['faculty_id'] != 0 && $this->user['group_id'] != 0) {
             $message .= "\n/my_schedule - Моё расписание\n/my_schedule_today - Расписание на сегодня\n/my_schedule_week - Расписание на неделю";
         }

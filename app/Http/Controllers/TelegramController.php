@@ -84,7 +84,12 @@ class TelegramController extends Controller
                         case 'start':
                             if(!UserTelegramRepository::instance()->get($chatId = $update->getMessage()->getChat()->getId()))
                             {
-                               UserTelegram::create(['id' => $chatId]);
+                                $data['id'] = $chatId;
+                                if($update->getMessage()->getChat()->getUsername() != null)
+                                {
+                                    $data['username'] = $update->getMessage()->getChat()->getUsername();
+                                }
+                                UserTelegram::create($data);
                             }
                             $start = new StartCommand($telegram, $update);
                             $start->execute();

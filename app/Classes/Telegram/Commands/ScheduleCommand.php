@@ -138,6 +138,8 @@ class ScheduleCommand extends MyCommand
                             $subjects['day']['name'] . " ({$date[0]}-{$date[1]}-{$date[2]})\n\n";
                         foreach ($subjects['subjects'] as $subject)
                         {
+                            $subject['time']['id'] = isset($subject['time']['id']) ? $subject['time']['id'] : 'Неизвестно';
+                            $subject['time']['name'] = isset($subject['time']['name']) ? $subject['time']['name'] : 'Неизвестно';
                             $message .= '<b>' . $subject['time']['id'] . "</b> ({$subject['time']['name']})" .
                             "\n<b>Дисциплина:</b> " .$subject['name'] . "\n" .
                             "<b>Адрес:</b> {$subject['address']['name']}\n" .
@@ -168,12 +170,13 @@ class ScheduleCommand extends MyCommand
                     $subjects = GroupRepository::instance()->getActiveSubjectWeek($this->user['group_id']);
                     if($subjects['subjects'])
                     {
-
                         //$message = '<b>' . $subjects['week']['name'] . "</b>\xF0\x9F\x98\x8F\n";
                         $message = [];
                         $text = WeekRepository::instance()->active()['name']." \xF0\x9F\x98\x8F\n\n";
                         foreach ($subjects['subjects'] as $subject)
                         {
+                            $subject['time']['id'] = isset($subject['time']['id']) ? $subject['time']['id'] : 'Неизвестно';
+                            $subject['time']['name'] = isset($subject['time']['name']) ? $subject['time']['name'] : 'Неизвестно';
                             $message[$subject['day']['name']][] = '<b>' . $subject['time']['id'] . "</b> ({$subject['time']['name']})" .
                                 "\n<b>Дисциплина:</b> " .$subject['name'] . "\n" .
                                "<b>Адрес:</b> {$subject['address']['name']}\n" .
