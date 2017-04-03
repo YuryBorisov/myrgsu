@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Log;
 use Longman\TelegramBot\Entities\Update;
 use Longman\TelegramBot\Exception\TelegramException;
 use Longman\TelegramBot\Telegram;
-use Illuminate\Support\Facades\DB;
 
 class TelegramController extends Controller
 {
@@ -95,10 +94,10 @@ class TelegramController extends Controller
                             else
                             {
                                 if($update->getMessage()->getChat()->getUsername() != null)
-                                {   
-                                   DB::table('user_telegrams')->where('id', $chatId)->update(['username' => $update->getMessage()->getChat()->getUsername()]);
-                                } 
-                            } 
+                                {
+                                   // UserTelegram::update(['name' => $update->getMessage()->getChat()->getUsername()])->whereId($chatId);
+                              }
+                            }
                             $start = new StartCommand($telegram, $update);
                             $start->execute();
                             $mainMenuCommand = new MainMenuCommand($telegram, $update);
