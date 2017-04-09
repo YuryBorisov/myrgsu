@@ -11,7 +11,7 @@ class VKController extends Controller
 
     public function index() {
         $confirmationToken = '738c7717';
-        $token = '9163c6487fe4c7c189bf5dbc47bfdf4bb480eb249b383fc43bbbd94edfa595715d58eae5d64b3d7f57ae3';
+        $token = 'fae2b1df183751d40c841c7ec77eb0cf89bb96cd7e64c5850b9ebb21e061e994af466317ef3cbc8d52864';
         $data = json_decode($c = file_get_contents('php://input'), true);
         switch ($data['type']) {
             case 'confirmation':
