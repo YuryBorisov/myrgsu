@@ -15,6 +15,10 @@ class FacultyRepository extends BaseRepository
 
     protected $addName = 'short_name';
 
+    protected $getMethodName = 'whereShortName';
+
+
+
     public function getCachedAll()
     {
         return Cache::tags([$this->cacheName, 'all']);

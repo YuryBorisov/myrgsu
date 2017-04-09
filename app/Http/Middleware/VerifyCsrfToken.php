@@ -12,6 +12,7 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        'telegram/334312989:AAEWEJVmWrh6XkNHKWdo_1waxE0r2G7eTjo'
+        'telegram/334312989:AAEWEJVmWrh6XkNHKWdo_1waxE0r2G7eTjo',
+        'vk'
     ];
 }

@@ -11,22 +11,12 @@
 |
 */
 
-use App\Models\Faculty;
+Route::get('/', function() {
+    return 123;
+});
 
 Route::get('/ttt', function () {
-    $str = "advertising platform";
-    $arr = [];
-    for ($i = 0; $i < 1000; $i++)
-    {
-        $st = '';
-        for($j = 0; $j < 5; $j++)
-        {
-            $st .= $str[rand(0, strlen($str) - 1)];
-        }
-        $arr[] = $st;
-    }
-    header('Content-type: text/plaint');
-    print_r($arr);
+
 });
 
 Route::group(['prefix' => 'telegram'], function (){
@@ -37,5 +27,7 @@ Route::group(['prefix' => 'telegram'], function (){
         Route::get('unset', ['as' => 'telegram.hook.unset', 'uses' => 'TelegramController@unsetWebhook']);
     });
 });
+
+Route::post('vk', ['as' => 'vk.index', 'uses' => 'VKController@index']);
 
 //Route::get('/parse', ['as' => 'parse', 'uses' => 'ParseController@parse']);
