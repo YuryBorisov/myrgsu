@@ -11,7 +11,7 @@ class VKController extends Controller
 
     private $confirmationToken = '738c7717';
 
-    private $token = 'fae2b1df183751d40c841c7ec77eb0cf89bb96cd7e64c5850b9ebb21e061e994af466317ef3cbc8d52864';
+    private $token = '46d96d342d9b2e1cb9ffe08f31f59235703b5bf81680c5604580996ec50351e7e7d6e118848e5afa862ec';
 
     public function send()
     {
