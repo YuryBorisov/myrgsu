@@ -28,7 +28,8 @@ class Commands
         'faculty', // 5
         'group', //6
         'myScheduleToday', // 7
-        'myScheduleWeek', // 8
+        9 => 'myScheduleTomorrowDay', //8 
+        8 => 'myScheduleWeek', // 9 
         55 => 'selectFacultyClose',
         66 => 'selectGroupClose'
      ];
@@ -201,6 +202,54 @@ class Commands
             {
                 $text = "\xE2\xAD\x90 ".$subjects['week']['name'] . " \xE2\xAD\x90 \n" .
                     $this->user['first_name'] . ", у Вас сегодня нет занятий \xF0\x9F\x98\x82";
+            }
+        }
+        else
+        {
+            $text = $this->user['first_name'].", для начала выбери группу";
+        }
+        return $text;
+    }
+
+    private function myScheduleTomorrowDay()
+    {
+        if($this->user['group_id'] != 0)
+        {
+            $date = explode('-', date('d-m-Y'));
+            $dayOfWeek = Carbon::now()->dayOfWeek;
+            $text = '';
+            if($dayOfWeek == 6)
+            {
+                $dayOfWeek = 0;
+                $text .= $this->user['first_name'].", завтра Воскресенье. \xF0\x9F\x91\x91\nПоэтому я покажу тебе занятия за понедельник\n\n";
+            }
+            else
+            {
+                $dayOfWeek++;
+            }
+            $subjects = GroupRepository::instance()->getActiveSubjectDay($this->user['group_id'], $dayOfWeek);
+            if($subjects['subjects'])
+            {
+                $text .= "\xE2\xAD\x90 ".$subjects['week']['name'] . " \xE2\xAD\x90\n" .
+                    "\xF0\x9F\x8C\x8D ".$subjects['day']['name'] . " ({$date[0]}-{$date[1]}-{$date[2]})\n\n";
+                foreach ($subjects['subjects'] as $subject)
+                {
+                    $subject['time']['id'] = isset($subject['time']['id']) ? $subject['time']['id'] : 'Неизвестно';
+                    $subject['time']['name'] = isset($subject['time']['name']) ? $subject['time']['name'] : 'Неизвестно';
+                    for ($h = 0; $h < $subject['time']['id']; $h++) {
+                        $text .= "\xE2\x8F\xB0 ";
+                    }
+                    $text .= "({$subject['time']['name']})" .
+                        "\nДисциплина: " .$subject['name'] . "\n" .
+                        "Адрес: {$subject['address']['name']}\n" .
+                        "Преподаватель: {$subject['teacher']['name']}\n\n";
+                }
+                $text .= "*********************\n" . $this->mainMenu();
+            }
+            else
+            {
+                $text = "\xE2\xAD\x90 ".$subjects['week']['name'] . " \xE2\xAD\x90 \n" .
+                    $this->user['first_name'] . ", у Вас нет занятий \xF0\x9F\x98\x82";
             }
         }
         else
