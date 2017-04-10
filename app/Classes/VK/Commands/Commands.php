@@ -28,8 +28,8 @@ class Commands
         'faculty', // 5
         'group', //6
         'myScheduleToday', // 7
-        9 => 'myScheduleTomorrowDay', //8 
-        8 => 'myScheduleWeek', // 9 
+        'myScheduleTomorrowDay', //8 
+        'myScheduleWeek', // 9 
         55 => 'selectFacultyClose',
         66 => 'selectGroupClose'
      ];
@@ -115,7 +115,7 @@ class Commands
                 {
                     if($group['id'] == $this->user['group_id'])
                     {
-                        $text .= "6. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n7. \xF0\x9F\x8E\x89 Сегодняшние занятия\n8. \xF0\x9F\x8E\x8A Показать за неделю\n\n0. \xE2\xAC\x85 Главное меню";
+                        $text .= "6. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n7. \xF0\x9F\x8E\x89 Сегодняшние занятия\n8. \xE2\x8F\xA9 Завтрашнии занятия\n9. \xF0\x9F\x8E\x8A Показать за неделю\n\n0. \xE2\xAC\x85 Главное меню";
                         break;
                     }
                 }
@@ -217,15 +217,15 @@ class Commands
         {
             $date = explode('-', date('d-m-Y'));
             $dayOfWeek = Carbon::now()->dayOfWeek;
-            $text = '';
             if($dayOfWeek == 6)
             {
                 $dayOfWeek = 0;
-                $text .= $this->user['first_name'].", завтра Воскресенье. \xF0\x9F\x91\x91\nПоэтому я покажу тебе занятия за понедельник\n\n";
+                $text = $this->user['first_name'].", завтра Воскресенье. \xF0\x9F\x91\x91\nПоэтому я покажу тебе занятия за понедельник\n\n";
             }
             else
             {
                 $dayOfWeek++;
+                $text = $this->user['first_name'].", вот твои занятия на завтра \xF0\x9F\x8E\x88";
             }
             $subjects = GroupRepository::instance()->getActiveSubjectDay($this->user['group_id'], $dayOfWeek);
             if($subjects['subjects'])

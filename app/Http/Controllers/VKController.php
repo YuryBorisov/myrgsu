@@ -17,12 +17,12 @@ class VKController extends Controller
     {
         ini_set('memory_limit', '-1');
         set_time_limit(100000);
-        UserVK::chunk(10, function($users)
+        UserVK::chunk(60, function($users)
         {
             foreach ($users as $user)
             {
                 $this->curl([
-                    'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nСегодня был добавлен новый факультет '\xF0\x9F\x8E\xA4 ВШМ - Высшая школа музыки имени А. ШНИТКЕ \xF0\x9F\x8E\xA4'",
+                    'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nВ разделе '\xE2\x98\x9D Моё расписание' добавленна новая команда '\xE2\x8F\xA9 Завтрашнии занятия'\nТак же сегодня был добавлен новый факультет '\xF0\x9F\x8E\xA4 ВШМ - Высшая школа музыки имени А. ШНИТКЕ \xF0\x9F\x8E\xA4'",
                     'user_id' => $user->id,
                     'access_token' => $this->token,
                     'v' => '5.0'
