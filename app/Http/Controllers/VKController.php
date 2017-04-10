@@ -9,13 +9,35 @@ use App\Repositories\UserVKRepository;
 class VKController extends Controller
 {
 
-    public function index() {
-        $confirmationToken = '738c7717';
-        $token = 'fae2b1df183751d40c841c7ec77eb0cf89bb96cd7e64c5850b9ebb21e061e994af466317ef3cbc8d52864';
+    private $confirmationToken = '738c7717';
+
+    private $token = 'fae2b1df183751d40c841c7ec77eb0cf89bb96cd7e64c5850b9ebb21e061e994af466317ef3cbc8d52864';
+
+    public function send()
+    {
+        ini_set('memory_limit', '-1');
+        set_time_limit(100000);
+        UserVK::chunk(10, function($users)
+        {
+            foreach ($users as $user)
+            {
+                $this->curl([
+                    'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nСегодня был добавлен новый факультет '\xF0\x9F\x8E\xA4 ВШМ - Высшая школа музыки имени А. ШНИТКЕ \xF0\x9F\x8E\xA4'",
+                    'user_id' => $user->id,
+                    'access_token' => $this->token,
+                    'v' => '5.0'
+                ]);
+            }
+            sleep(1);
+        });
+    }
+
+    public function index()
+    {
         $data = json_decode($c = file_get_contents('php://input'), true);
         switch ($data['type']) {
             case 'confirmation':
-                return $confirmationToken;
+                return $this->confirmationToken;
                 break;
             case 'message_new':
                 if (!($user = ($res = UserVKRepository::instance())->get($data['object']['user_id']))) {
@@ -69,22 +91,26 @@ class VKController extends Controller
                 {
                     $text = "{$user['response'][0]['first_name']} 3(\nПроизошла ошибка.\nПопробуйте ещё раз =]";
                 }
-                $curl = curl_init();
-                curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send');
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
-                curl_setopt($curl, CURLOPT_POST, true);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query([
+                $this->curl([
                     'message' => $text,
                     'user_id' => $user['id'],
-                    'access_token' => $token,
+                    'access_token' => $this->token,
                     'v' => '5.0'
-                ]));
-                curl_exec($curl);
-                curl_close($curl);
+                ]);
                 return 'ok';
-
                 break;
         }
+    }
+
+    private function curl($arr)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
+        curl_exec($curl);
+        curl_close($curl);
     }
 
 }

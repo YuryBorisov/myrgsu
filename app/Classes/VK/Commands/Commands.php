@@ -8,6 +8,7 @@ use App\Repositories\GroupRepository;
 use App\Repositories\UserVKRepository;
 use App\Repositories\WeekRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Commands
 {
