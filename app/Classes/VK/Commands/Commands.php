@@ -120,12 +120,12 @@ class Commands
             }
             else
             {
-                $text .= "6. \xF0\x9F\x8E\x93 Группа: Не выбрана";
+                $text .= "6. \xF0\x9F\x8E\x93 Группа: Не выбрана\n\n0. \xE2\xAC\x85 Главное меню";
             }
         }
         else
         {
-            $text .= "5. \xE2\x98\x9D Факультет: Не выбран";
+            $text .= "5. \xE2\x98\x9D Факультет: Не выбран\n\n0. \xE2\xAC\x85 Главное меню";
         }
         return $text;
     }
@@ -155,7 +155,7 @@ class Commands
             {
                 $text .= $group['short_name']."\n";
             }
-            $text .= "\n\nВведите название группы из списка.\nДля отмены выбора отправьте 66";
+            $text .= "\n\nПришлите название группы из списка.\nДля отмены выбора отправьте 66";
             UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_group');
         }
         else

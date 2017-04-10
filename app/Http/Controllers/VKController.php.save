@@ -81,7 +81,7 @@ class VKController extends Controller
                     'v' => '5.0'
                 ]));
                 curl_exec($curl);
-                //Log
+                Log::info(curl_error($curl));
                 curl_close($curl);
                 echo('ok');
         }

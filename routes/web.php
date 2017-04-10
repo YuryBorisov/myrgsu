@@ -28,6 +28,6 @@ Route::group(['prefix' => 'telegram'], function (){
     });
 });
 
-Route::post('vk', ['as' => 'vk.index', 'uses' => 'VKController@index']);
+Route::any('vk', ['as' => 'vk.index', 'uses' => 'VKController@index']);
 
 //Route::get('/parse', ['as' => 'parse', 'uses' => 'ParseController@parse']);
