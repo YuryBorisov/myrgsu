@@ -225,7 +225,7 @@ class Commands
             else
             {
                 $dayOfWeek++;
-                $text = $this->user['first_name'].", вот твои занятия на завтра \xF0\x9F\x8E\x88";
+                $text = $this->user['first_name'].", вот твои занятия на завтра \xF0\x9F\x8E\x88\n\n";
             }
             $subjects = GroupRepository::instance()->getActiveSubjectDay($this->user['group_id'], $dayOfWeek);
             if($subjects['subjects'])
