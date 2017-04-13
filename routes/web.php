@@ -9,7 +9,7 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+*/ 
 
 Route::get('/', function() {
     return 123;
@@ -27,9 +27,7 @@ Route::group(['prefix' => 'telegram'], function (){
         Route::get('unset', ['as' => 'telegram.hook.unset', 'uses' => 'TelegramController@unsetWebhook']);
     });
 });
-
-Route::any('vk', ['as' => 'vk.index', 'uses' => 'VKController@index']);
-
-Route::get('Frd34DesxzYu763ermX', ['as' => 'vk.send', 'uses' => 'VKController@send']);
+Route::any('vktest', ['as' => 'vk.index', 'uses' => 'VKController@index']);
+Route::post('vk', ['as' => 'vk.index', 'uses' => 'VKController@index']);
 
 //Route::get('/parse', ['as' => 'parse', 'uses' => 'ParseController@parse']);

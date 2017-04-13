@@ -5,39 +5,18 @@ namespace App\Http\Controllers;
 use App\Classes\VK\Commands\Commands;
 use App\Models\UserVK;
 use App\Repositories\UserVKRepository;
+use Illuminate\Support\Facades\Log;
 
 class VKController extends Controller
 {
 
-    private $confirmationToken = '738c7717';
-
-    private $token = '46d96d342d9b2e1cb9ffe08f31f59235703b5bf81680c5604580996ec50351e7e7d6e118848e5afa862ec';
-
-    public function send()
-    {
-        ini_set('memory_limit', '-1');
-        set_time_limit(100000);
-        UserVK::chunk(60, function($users)
-        {
-            foreach ($users as $user)
-            {
-                $this->curl([
-                    'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nВ разделе '\xE2\x98\x9D Моё расписание' добавленна новая команда '\xE2\x8F\xA9 Завтрашнии занятия'\nТак же сегодня был добавлен новый факультет '\xF0\x9F\x8E\xA4 ВШМ - Высшая школа музыки имени А. ШНИТКЕ \xF0\x9F\x8E\xA4'",
-                    'user_id' => $user->id,
-                    'access_token' => $this->token,
-                    'v' => '5.0'
-                ]);
-            }
-            sleep(1);
-        });
-    }
-
     public function index()
     {
         $data = json_decode($c = file_get_contents('php://input'), true);
+        Log::info($data);
         switch ($data['type']) {
             case 'confirmation':
-                return $this->confirmationToken;
+                return env('VK_BOT_CONFIRMATION');
                 break;
             case 'message_new':
                 if (!($user = ($res = UserVKRepository::instance())->get($data['object']['user_id']))) {
@@ -82,6 +61,14 @@ class VKController extends Controller
                             $text = (new Commands($user, 'select_group', $data['object']['body']))->executeCommandText();
                         }
                     }
+                    else if($commandEnd == 'select_call')
+                    {
+                        if($data['object']['body'] == 100) {
+                            $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
+                        } else {
+                            $text = (new Commands($user, 'select_call', $data['object']['body']))->executeCommandText();
+                        }
+                    }
                     else
                     {
                         $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
@@ -91,26 +78,15 @@ class VKController extends Controller
                 {
                     $text = "{$user['response'][0]['first_name']} 3(\nПроизошла ошибка.\nПопробуйте ещё раз =]";
                 }
-                $this->curl([
+                Commands::sendMessage([
                     'message' => $text,
                     'user_id' => $user['id'],
-                    'access_token' => $this->token,
+                    'access_token' => env('VK_BOT_KEY'),
                     'v' => '5.0'
                 ]);
                 return 'ok';
                 break;
         }
-    }
-
-    private function curl($arr)
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send');
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
-        curl_exec($curl);
-        curl_close($curl);
     }
 
 }

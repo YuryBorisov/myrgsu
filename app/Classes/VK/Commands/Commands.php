@@ -8,7 +8,6 @@ use App\Repositories\GroupRepository;
 use App\Repositories\UserVKRepository;
 use App\Repositories\WeekRepository;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class Commands
 {
@@ -30,8 +29,10 @@ class Commands
         'myScheduleToday', // 7
         'myScheduleTomorrowDay', //8 
         'myScheduleWeek', // 9 
+        'notifications',
         55 => 'selectFacultyClose',
-        66 => 'selectGroupClose'
+        66 => 'selectGroupClose',
+        100 => 'selectCallClose'
      ];
 
     public function __construct($user, $command, $message = null)
@@ -85,6 +86,25 @@ class Commands
                 $text = "Я не смог найти эту группу \xF0\x9F\x98\x94\nПришли еще раз или отправь цифру '66', чтобы выйти из выбора группы";
             }
             return $text;
+        } else if($this->command == 'select_call') {
+            if($this->message == 1)
+            {
+                if(UserVK::where(['id' => $this->user['id']])->update(['call' => $this->user['call'] == 0 ? 1 : 0]))
+                {
+                    UserVKRepository::instance()->clear($this->user['id']);
+                    $this->user = UserVKRepository::instance()->get($this->user['id']);
+                    $text = $this->selectCallClose();
+                }
+                else
+                {
+                    $text = "Произошла ошибка.\nПопробуйте снова.";
+                }
+            }
+            else
+            {
+                $text = $this->notifications();
+            }
+            return $text;
         }
     }
 
@@ -115,7 +135,8 @@ class Commands
                 {
                     if($group['id'] == $this->user['group_id'])
                     {
-                        $text .= "6. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n7. \xF0\x9F\x8E\x89 Сегодняшние занятия\n8. \xE2\x8F\xA9 Завтрашнии занятия\n9. \xF0\x9F\x8E\x8A Показать за неделю\n\n0. \xE2\xAC\x85 Главное меню";
+                        $callText = $this->user['call'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
+                        $text .= "6. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n7. \xF0\x9F\x8E\x89 Сегодняшние занятия\n8. \xE2\x8F\xA9 Завтрашнии занятия\n9. \xF0\x9F\x8E\x8A Показать за неделю\n10. \xF0\x9F\x94\x8A Уведомления [{$callText}]\n\n0. \xE2\xAC\x85 Главное меню";
                         break;
                     }
                 }
@@ -320,5 +341,40 @@ class Commands
     {
         return $this->user['first_name'].", пока не работает, нет времени реализовать \xF0\x9F\x98\x94\n*********************\n".$this->mainMenu();
     }
+
+    private function notifications()
+    {
+        if($this->user['group_id'] != 0)
+        {
+            $t = $this->user['call'] == 0 ? 'включены' : 'выключены';
+            $m = $this->user['call'] == 0 ? 'выключить' : 'включить';
+            $com = '1. '.($this->user['call'] == 0 ? "\xE2\x9D\x8E Выключить" : "\xE2\x9C\x85 Включить");
+            $text = "\xF0\x9F\x94\x8A Уведомления (сейчас твои уведомления о расписании {$t})\n\n{$com}\n\nОтправьте цифру 1 если вы хотите {$m} уведомления.\nДля выхода отправьте цифру 100.";
+            UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_call');
+        }
+        else
+        {
+            $text = $this->user['first_name'].", для начала выбери группу";
+        }
+        return $text;
+    }
+
+    private function selectCallClose()
+    {
+        UserVKRepository::instance()->addCommandEnd($this->user['id'], false);
+        return $this->mySchedule();
+    }
+
+    public static function sendMessage($arr)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
+        curl_exec($curl);
+        curl_close($curl);
+    }
+
 
 }
