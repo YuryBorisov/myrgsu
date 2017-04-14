@@ -30,8 +30,7 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule)
-    {
-        Log::info("CRON");
+    { 
         $schedule->command('morning_schedule')->twiceDaily(8, 21);
     }
 

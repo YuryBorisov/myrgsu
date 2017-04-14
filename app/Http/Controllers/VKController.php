@@ -41,7 +41,7 @@ class VKController extends Controller
                     {
                         $text = "Привет {$user['first_name']} \xE2\x9C\x8C\nЧтобы мы могли понимать друг друга присылай мне команды \xF0\x9F\x98\xA4\nНапример сейчас ты можешь мне прислать цифру 1, тогда тебе будет доступен выбор факультета \xF0\x9F\x98\x9C\n\n";
                         $text .= (new Commands($user, 0))->executeCommandNumber();
-                        $text .= "*********************\nУ ВК есть лимит на сообщения, чтобы не было проблем подпишись на меня \xE2\x9C\x8F (https://vk.com/rgsu_bot) \nСовсем скоро будут реализованы все функции, а так же СДО и многое другое =]\nTelegram - https://t.me/rgsu_bot";
+                        $text .= "\n*********************\nУ ВК есть лимит на сообщения, чтобы не было проблем подпишись на меня \xE2\x9C\x8F (https://vk.com/rgsu_bot) \nСовсем скоро будут реализованы все функции, а так же СДО и многое другое =]\nTelegram - https://t.me/rgsu_bot";
                         $res->addCommandEnd($user['id'], false);
                     }
                     else if($commandEnd == 'select_faculty')
