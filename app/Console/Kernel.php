@@ -3,10 +3,12 @@
 namespace App\Console;
 
 use App\Console\Commands\EveningSchedule;
+use App\Console\Commands\MorningSchedule;
 use App\Console\Commands\SendMessage;
 use App\Models\UserVK;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 class Kernel extends ConsoleKernel
 {
@@ -17,7 +19,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         EveningSchedule::class,
-        SendMessage::class
+        SendMessage::class,
+        MorningSchedule::class
     ];
 
     /**
@@ -28,14 +31,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
-        //$schedule->call(function () {
-        //    foreach (UserVK::where(['call' => 0])->get() as $user)
-        //    {
-
-        //    }
-        //})->twiceDaily(21, 8);
+        Log::info("CRON");
+        $schedule->command('morning_schedule')->twiceDaily(8, 21);
     }
 
     /**

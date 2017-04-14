@@ -13,7 +13,6 @@ class VKController extends Controller
     public function index()
     {
         $data = json_decode($c = file_get_contents('php://input'), true);
-        Log::info($data);
         switch ($data['type']) {
             case 'confirmation':
                 return env('VK_BOT_CONFIRMATION');
@@ -47,7 +46,7 @@ class VKController extends Controller
                     }
                     else if($commandEnd == 'select_faculty')
                     {
-                        if($data['object']['body'] == 55) {
+                        if($data['object']['body'] == 100) {
                             $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
                         } else {
                             $text = (new Commands($user, 'select_faculty', $data['object']['body']))->executeCommandText();
@@ -55,7 +54,7 @@ class VKController extends Controller
                     }
                     else if($commandEnd == 'select_group')
                     {
-                        if($data['object']['body'] == 66) {
+                        if($data['object']['body'] == 110) {
                             $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
                         } else {
                             $text = (new Commands($user, 'select_group', $data['object']['body']))->executeCommandText();
@@ -63,7 +62,7 @@ class VKController extends Controller
                     }
                     else if($commandEnd == 'select_call')
                     {
-                        if($data['object']['body'] == 100) {
+                        if($data['object']['body'] == 150) {
                             $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
                         } else {
                             $text = (new Commands($user, 'select_call', $data['object']['body']))->executeCommandText();

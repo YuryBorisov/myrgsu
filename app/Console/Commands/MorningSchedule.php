@@ -6,14 +6,14 @@ use App\Classes\VK\Commands\Commands;
 use App\Models\UserVK;
 use Illuminate\Console\Command;
 
-class EveningSchedule extends Command
+class MorningSchedule extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'evening_schedule';
+    protected $signature = 'morning_schedule';
 
     /**
      * The console command description.
@@ -43,12 +43,9 @@ class EveningSchedule extends Command
         foreach (UserVK::where(['call' => 0])->get() as $user)
         {
             $text = false;
-            if($user->call == 0)
+            if($user->group_id != 0)
             {
-                if($user->group_id != 0)
-                {
-                    $text = (new Commands($user, 8))->executeCommandNumber();
-                }
+                $text = (new Commands($user, 12))->executeCommandNumber();
             }
             if($text)
             {

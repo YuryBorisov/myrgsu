@@ -18,21 +18,24 @@ class Commands
 
     private $message;
 
+    //Пожелания / Улучшения
+
     private $commands = [
         'mainMenu', // MainMenu 0
         'mySchedule', // 1
         'rooms',// 2
         'teachers', // 3
-        'feedback', // 4
-        'faculty', // 5
-        'group', //6
-        'myScheduleToday', // 7
-        'myScheduleTomorrowDay', //8 
-        'myScheduleWeek', // 9 
-        'notifications',
-        55 => 'selectFacultyClose',
-        66 => 'selectGroupClose',
-        100 => 'selectCallClose'
+        4 => 'wishes',
+        5 => 'feedback', // 4
+        10 => 'faculty', // 5
+        11 => 'group', //6
+        12 => 'myScheduleToday', // 7
+        13 => 'myScheduleTomorrowDay', //8 
+        14 => 'myScheduleWeek', // 9 
+        15 => 'notifications',
+        100 => 'selectFacultyClose',
+        110 => 'selectGroupClose',
+        150 => 'selectCallClose'
      ];
 
     public function __construct($user, $command, $message = null)
@@ -83,7 +86,7 @@ class Commands
             }
             else
             {
-                $text = "Я не смог найти эту группу \xF0\x9F\x98\x94\nПришли еще раз или отправь цифру '66', чтобы выйти из выбора группы";
+                $text = "Я не смог найти эту группу \xF0\x9F\x98\x94\nПришли еще раз или отправь цифру '110', чтобы выйти из выбора группы";
             }
             return $text;
         } else if($this->command == 'select_call') {
@@ -117,9 +120,14 @@ class Commands
         return $this->{$this->commands[$this->command]}();
     }
 
+    public function wishes()
+    {
+        return "Есть предложения ? \xF0\x9F\x98\x89\nНапиши сюда https://vk.com/topic-144482898_35457395\n*********************\n".$this->mainMenu();
+    }
+
     private function mainMenu()
     {
-        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xF0\x9F\x8E\xA4 Feedback \n";
+        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xE2\x9A\xA1 Пожелания/Улучшения\n5. \xF0\x9F\x8E\xA4 Feedback";
     }
 
     private function mySchedule()
@@ -128,7 +136,7 @@ class Commands
         if(isset($this->user['faculty_id']) && $this->user['faculty_id'] != 0)
         {
             $faculty = FacultyRepository::instance()->get($this->user['faculty_id']);
-            $text .= "5. \xE2\x98\x9D Факультет: {$faculty['short_name']}\n";
+            $text .= "10. \xE2\x98\x9D Факультет: {$faculty['short_name']}\n";
             if ($this->user['group_id'] != 0)
             {
                 foreach ($faculty['groups'] as $group)
@@ -136,19 +144,19 @@ class Commands
                     if($group['id'] == $this->user['group_id'])
                     {
                         $callText = $this->user['call'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
-                        $text .= "6. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n7. \xF0\x9F\x8E\x89 Сегодняшние занятия\n8. \xE2\x8F\xA9 Завтрашнии занятия\n9. \xF0\x9F\x8E\x8A Показать за неделю\n10. \xF0\x9F\x94\x8A Уведомления [{$callText}]\n\n0. \xE2\xAC\x85 Главное меню";
+                        $text .= "11. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n12. \xF0\x9F\x8E\x89 Сегодняшние занятия\n13. \xE2\x8F\xA9 Завтрашнии занятия\n14. \xF0\x9F\x8E\x8A Показать за неделю\n15. \xF0\x9F\x94\x8A Уведомления [{$callText}]\n\n0. \xE2\xAC\x85 Главное меню";
                         break;
                     }
                 }
             }
             else
             {
-                $text .= "6. \xF0\x9F\x8E\x93 Группа: Не выбрана\n\n0. \xE2\xAC\x85 Главное меню";
+                $text .= "11. \xF0\x9F\x8E\x93 Группа: Не выбрана\n\n0. \xE2\xAC\x85 Главное меню";
             }
         }
         else
         {
-            $text .= "5. \xE2\x98\x9D Факультет: Не выбран\n\n0. \xE2\xAC\x85 Главное меню";
+            $text .= "10. \xE2\x98\x9D Факультет: Не выбран\n\n0. \xE2\xAC\x85 Главное меню";
         }
         return $text;
     }
@@ -156,7 +164,7 @@ class Commands
     private function faculty()
     {
         $faculties = FacultyRepository::instance()->all();
-        $text =  "55. \xE2\xAC\x85 Вернуться назад\n\nПришлите сокращённое название факультета\n\nСписок факультетов:\n";
+        $text =  "100. \xE2\xAC\x85 Вернуться назад\n\nПришлите сокращённое название факультета\n\nСписок факультетов:\n";
         foreach ($faculties as $faculty) {
             $text .= "{$faculty['short_name']} - {$faculty['full_name']}\n";
         }
@@ -178,7 +186,7 @@ class Commands
             {
                 $text .= $group['short_name']."\n";
             }
-            $text .= "\n\nПришлите название группы из списка.\nДля отмены выбора отправьте 66";
+            $text .= "\n\nПришлите название группы из списка.\nДля отмены выбора отправьте 110";
             UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_group');
         }
         else
@@ -349,7 +357,7 @@ class Commands
             $t = $this->user['call'] == 0 ? 'включены' : 'выключены';
             $m = $this->user['call'] == 0 ? 'выключить' : 'включить';
             $com = '1. '.($this->user['call'] == 0 ? "\xE2\x9D\x8E Выключить" : "\xE2\x9C\x85 Включить");
-            $text = "\xF0\x9F\x94\x8A Уведомления (сейчас твои уведомления о расписании {$t})\n\n{$com}\n\nОтправьте цифру 1 если вы хотите {$m} уведомления.\nДля выхода отправьте цифру 100.";
+            $text = "\xF0\x9F\x94\x8A Уведомления (сейчас твои уведомления о расписании {$t})\n\n{$com}\n\nОтправьте цифру 1 если вы хотите {$m} уведомления.\nДля выхода отправьте цифру 150.";
             UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_call');
         }
         else

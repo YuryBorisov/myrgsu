@@ -40,19 +40,20 @@ class SendMessage extends Command
     public function handle()
     {
         $i = 0;
-        foreach (UserVK::where(['call' => 0])->get() as $user)
+        foreach (UserVK::all() as $user)
         {
-            if($i == 10)
+            if($i == 5)
             {
                 sleep(5);
                 $i = 0;
             }
             Commands::sendMessage([
-                'message' => "Привет {$user->first_name} \xE2\x9C\x8C \n\nТеперь тебе вечером и с утра будут приходить уведомления [расписание]\nТак же ты можешь их отключить и заново включить =] (В разделе 'Моё расписание' добавлена новая команда, посмотри)\nХорошей ночи.",
+                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nДобавлена новая команда '\xE2\x9A\xA1Пожелания/Улучшения' в главном меню",
                 'user_id' => $user['id'],
                 'access_token' => env('VK_BOT_KEY'),
                 'v' => '5.0'
             ]);
+            echo $user->id."\n";
             $i++;
         }
     }
