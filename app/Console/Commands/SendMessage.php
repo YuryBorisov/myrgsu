@@ -40,7 +40,7 @@ class SendMessage extends Command
     public function handle()
     {
         $i = 0;
-        foreach (UserVK::all() as $user)
+        foreach (UserVK::where(['distribution' => 0])->get() as $user)
         {
             if($i == 3)
             {

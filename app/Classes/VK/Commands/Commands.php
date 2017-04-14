@@ -25,8 +25,9 @@ class Commands
         'mySchedule', // 1
         'rooms',// 2
         'teachers', // 3
-        4 => 'wishes',
-        5 => 'feedback', // 4
+        4 => 'player',
+        5 => 'wishes',
+        6 => 'feedback', // 4
         10 => 'faculty', // 5
         11 => 'group', //6
         12 => 'myScheduleToday', // 7
@@ -127,7 +128,7 @@ class Commands
 
     private function mainMenu()
     {
-        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xE2\x9A\xA1 Пожелания/Улучшения\n5. \xF0\x9F\x8E\xA4 Feedback";
+        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xF0\x9F\x8E\xA7 Плеер\n5. \xE2\x9A\xA1 Пожелания/Улучшения\n6. \xF0\x9F\x8E\xA4 Feedback";
     }
 
     private function mySchedule()
@@ -335,9 +336,14 @@ class Commands
         return $text;
     }
 
+    private function player()
+    {
+        return "У тебя есть любимые треки? \xF0\x9F\x8E\xA7\nЕсли есть, то присоединяйся https://vk.com/topic-144482898_35459441\n*********************\n" . $this->mainMenu();
+    }
+
     private function feedback()
     {
-        return "Есть предложения или замечания? \xF0\x9F\x98\x89\nПиши https://vk.com/id333114129\n*********************\n" . $this->mainMenu();
+        return "Не можешь разобраться? \xF0\x9F\x98\x89\nПиши https://vk.com/id333114129\n*********************\n" . $this->mainMenu();
     }
 
     private function rooms()
