@@ -42,7 +42,7 @@ class SendMessage extends Command
         $i = 0;
         foreach (UserVK::all() as $user)
         {
-            if($i == 5)
+            if($i == 3)
             {
                 sleep(5);
                 $i = 0;

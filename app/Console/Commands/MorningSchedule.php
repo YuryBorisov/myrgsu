@@ -49,7 +49,7 @@ class MorningSchedule extends Command
             }
             if($text)
             {
-                if($i == 5)
+                if($i == 3)
                 {
                     sleep(5);
                     $i = 0;
