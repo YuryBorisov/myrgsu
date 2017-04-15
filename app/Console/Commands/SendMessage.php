@@ -48,7 +48,7 @@ class SendMessage extends Command
                 $i = 0;
             }
             Commands::sendMessage([
-                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nУ тебя есть любимые треки? \xF0\x9F\x8E\xA7\nЕсли есть, то присоединяйся https://vk.com/topic-144482898_35459441",
+                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nУ бота есть '\xF0\x9F\x8E\xA7 Плеер'\nОтправь цифру '4' и тебе придет рандомная песня.\nПопробуй \xF0\x9F\x98\x89",
                 'user_id' => $user['id'],
                 'access_token' => env('VK_BOT_KEY'),
                 'v' => '5.0'

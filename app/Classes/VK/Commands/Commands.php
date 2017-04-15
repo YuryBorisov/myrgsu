@@ -8,6 +8,7 @@ use App\Repositories\GroupRepository;
 use App\Repositories\UserVKRepository;
 use App\Repositories\WeekRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class Commands
 {
@@ -338,7 +339,38 @@ class Commands
 
     private function player()
     {
-        return "У тебя есть любимые треки? \xF0\x9F\x8E\xA7\nЕсли есть, то присоединяйся https://vk.com/topic-144482898_35459441\n*********************\n" . $this->mainMenu();
+        $response = json_decode(self::getComments(), true)['response'];
+        unset($response['comments'][0]);
+        $audios = [];
+        foreach ($response['comments'] as $comment)
+        {
+            if(isset($comment['attachments']))
+            {
+                foreach ($comment['attachments'] as $attachment)
+                {
+                    if($attachment['type'] == 'audio')
+                    {
+                        $attachment['user_id'] = $comment['from_id'];
+                        $audios[] =  $attachment;
+                    }
+                }
+            }
+        }
+        $audio = $audios[rand(0, count($audios) - 1)];
+        if(!$userAudio = UserVKRepository::instance()->get($audio['user_id']))
+        {
+            $userAudio = json_decode($t = file_get_contents("https://api.vk.com/method/users.get?user_ids={$audio['user_id']}&v=5.0"), true)['response'][0];
+        }
+        $arr = [
+            'user_id' => $this->user['id'],
+            'message' => "Добавил(a): {$userAudio['first_name']} {$userAudio['last_name']} [https://vk.com/id{$audio['user_id']}]\n",
+            'access_token' => env('VK_BOT_KEY'),
+            'attachment' => 'audio'.$audio['audio']['owner_id'].'_'.$audio['audio']['aid'],
+            'v' => '5.0'
+        ];
+        self::sendAudio($arr);
+        return "Добавь свою музыку \xF0\x9F\x8E\xA7\nhttps://vk.com/topic-144482898_35459441\nОтправь цифру 4, чтобы получить ещё песню.\n*********************\n" . $this->mainMenu();
+        //return false; //return "У тебя есть любимые треки? \xF0\x9F\x8E\xA7\nЕсли есть, то присоединяйся https://vk.com/topic-144482898_35459441\n*********************\n" . $this->mainMenu();
     }
 
     private function feedback()
@@ -390,5 +422,33 @@ class Commands
         curl_close($curl);
     }
 
+    public static function getComments()
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/board.getComments');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query([
+            'access_token' => env('VK_TOKEN'),
+            'group_id' => 144482898,
+            'topic_id' => 35459441,
+            'extended' => true,
+            'count' => 100
+        ]));
+        $out = curl_exec($curl);
+        curl_close($curl);
+        return $out;
+    }
+
+    public static function sendAudio($arr)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
+        curl_exec($curl);
+        curl_close($curl);
+    }
 
 }
