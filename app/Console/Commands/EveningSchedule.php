@@ -47,7 +47,7 @@ class EveningSchedule extends Command
             {
                 if($user->group_id != 0)
                 {
-                    $text = (new Commands($user, 8))->executeCommandNumber();
+                    $text = (new Commands($user, 13))->executeCommandNumber();
                 }
             }
             if($text)
