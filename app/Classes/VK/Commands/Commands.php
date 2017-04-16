@@ -36,7 +36,7 @@ class Commands
         14 => 'myScheduleWeek', // 9 
         15 => 'notifications',
         100 => 'selectFacultyClose',
-        110 => 'selectGroupClose',
+        1111 => 'selectGroupClose',
         150 => 'selectCallClose'
      ];
 
@@ -49,7 +49,8 @@ class Commands
 
     public function executeCommandText() {
         if($this->command == 'select_faculty') {
-            if($faculty = FacultyRepository::instance()->getByName($this->message)) {
+            if($faculty = (is_numeric($this->message) ? FacultyRepository::instance()->get($this->message) : FacultyRepository::instance()->getByName($this->message)))
+            {
                 if($this->user['faculty_id'] != $faculty['id']) {
                     if(UserVK::where(['id' => $this->user['id']])->update(['faculty_id' => $faculty['id'], 'group_id' => 0])) {
                         UserVKRepository::instance()->clear($this->user['id']);
@@ -61,12 +62,14 @@ class Commands
                 } else {
                     $text = $this->selectFacultyClose();
                 }
-            } else {
+            }
+            else
+            {
                 $text = "Я не смог найти твой факультет \xF0\x9F\x98\x94\nПришли еще раз или отправь цифру '100' для отмены выбора";
             }
-            return $text;
         } else if($this->command == 'select_group'){
-            if($group = GroupRepository::instance()->getByName($this->message))
+
+            if($group = (is_numeric($this->message) ? GroupRepository::instance()->get($this->message) : GroupRepository::instance()->getByName($this->message)))
             {
                 if($group['faculty_id'] == $this->user['faculty_id'])
                 {
@@ -83,12 +86,12 @@ class Commands
                 }
                 else
                 {
-                    $text = $this->user['first_name'].", этой группы нет на вашем факультете\nПришли верное название отправь цифру '110', чтобы выйти из выбора группы";
+                    $text = $this->user['first_name'].", этой группы нет на вашем факультете.\nПришлите верное название или цифру.\nОтправь цифру '1111', чтобы выйти из выбора группы.";
                 }
             }
             else
             {
-                $text = "Я не смог найти эту группу \xF0\x9F\x98\x94\nПришли еще раз или отправь цифру '110', чтобы выйти из выбора группы";
+                $text = "Я не смог найти эту группу \xF0\x9F\x98\x94\nПришли еще раз или отправь цифру '1111', чтобы выйти из выбора группы";
             }
             return $text;
         } else if($this->command == 'select_call') {
@@ -109,8 +112,8 @@ class Commands
             {
                 $text = $this->notifications();
             }
-            return $text;
         }
+        return $text;
     }
 
     public function executeCommandNumber()
@@ -166,9 +169,9 @@ class Commands
     private function faculty()
     {
         $faculties = FacultyRepository::instance()->all();
-        $text =  "100. \xE2\xAC\x85 Вернуться назад\n\nПришлите сокращённое название факультета\n\nСписок факультетов:\n";
+        $text =  "100. \xE2\xAC\x85 Вернуться назад\n\nПришлите сокращённое название факультета или цифру.\n\nСписок факультетов:\n";
         foreach ($faculties as $faculty) {
-            $text .= "{$faculty['short_name']} - {$faculty['full_name']}\n";
+            $text .= "{$faculty['id']}. {$faculty['short_name']} - {$faculty['full_name']}\n";
         }
         UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_faculty');
         return $text;
@@ -186,9 +189,9 @@ class Commands
             $text = "Группы факультета '{$f['short_name']} - {$f['full_name']}'\n\n";
             foreach ($f['groups'] as $group)
             {
-                $text .= $group['short_name']."\n";
+                $text .= $group['id'].'. '.$group['short_name']."\n";
             }
-            $text .= "\n\nПришлите название группы из списка.\nДля отмены выбора отправьте 110";
+            $text .= "\n\nПришлите название группы из списка или цифру.\nДля отмены выбора отправьте 1111";
             UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_group');
         }
         else

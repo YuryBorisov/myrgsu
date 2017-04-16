@@ -54,7 +54,7 @@ class VKController extends Controller
                     }
                     else if($commandEnd == 'select_group')
                     {
-                        if($data['object']['body'] == 110) {
+                        if($data['object']['body'] == 1111) {
                             $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
                         } else {
                             $text = (new Commands($user, 'select_group', $data['object']['body']))->executeCommandText();
