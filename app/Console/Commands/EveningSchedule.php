@@ -58,7 +58,7 @@ class EveningSchedule extends Command
             {
                 if($user->group_id != 0)
                 {
-                    if(count(GroupRepository::instance()->getActiveSubjectDay($user['group_id'], $dayOfWeek)) > 0) {
+                    if(count(GroupRepository::instance()->getActiveSubjectDay($user->group_id, $dayOfWeek)) > 0) { 
                         $text = (new Commands($user, 13))->executeCommandNumber();
                     } else {
                         $text = "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\n\nЗавтра у тебя нет пар \xF0\x9F\x98\xB1\nРазвлекайся \xF0\x9F\x8E\x89 \xF0\x9F\x8E\x89 \xF0\x9F\x8E\x89";
@@ -74,7 +74,7 @@ class EveningSchedule extends Command
                 }
                 Commands::sendMessage([
                     'message' => $text,
-                    'user_id' => $user['id'],
+                    'user_id' => $user->id,
                     'access_token' => env('VK_BOT_KEY'),
                     'v' => '5.0'
                 ]);
