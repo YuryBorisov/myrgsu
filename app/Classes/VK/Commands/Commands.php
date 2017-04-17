@@ -230,7 +230,6 @@ class Commands
                         "Адрес: {$subject['address']['name']}\n" .
                         "Преподаватель: {$subject['teacher']['name']}\n\n";
                 }
-                $text .= "*********************\n" . $this->mainMenu();
             }
             else
             {
@@ -242,6 +241,7 @@ class Commands
         {
             $text = $this->user['first_name'].", для начала выбери группу";
         }
+        $text .= "*********************\n" . $this->mainMenu();
         return $text;
     }
 
@@ -278,7 +278,6 @@ class Commands
                         "Адрес: {$subject['address']['name']}\n" .
                         "Преподаватель: {$subject['teacher']['name']}\n\n";
                 }
-                $text .= "*********************\n" . $this->mainMenu();
             }
             else
             {
@@ -290,6 +289,7 @@ class Commands
         {
             $text = $this->user['first_name'].", для начала выбери группу";
         }
+        $text .= "*********************\n" . $this->mainMenu();
         return $text;
     }
 
@@ -325,7 +325,6 @@ class Commands
                     }
                     $text .= "\n";
                 }
-                $text .= "*********************\n" . $this->mainMenu();
             }
             else
             {
@@ -337,6 +336,7 @@ class Commands
         {
             $text = $this->user['first_name'].", для начала выбери группу";
         }
+        $text .= "*********************\n" . $this->mainMenu();
         return $text;
     }
 
