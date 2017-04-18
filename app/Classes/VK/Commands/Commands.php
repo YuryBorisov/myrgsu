@@ -234,12 +234,12 @@ class Commands
             else
             {
                 $text = "\xE2\xAD\x90 ".$subjects['week']['name'] . " \xE2\xAD\x90 \n" .
-                    $this->user['first_name'] . ", у Вас сегодня нет занятий \xF0\x9F\x98\x82";
+                    $this->user['first_name'] . ", у Вас сегодня нет занятий \xF0\x9F\x98\x82\n";
             }
         }
         else
         {
-            $text = $this->user['first_name'].", для начала выбери группу";
+            $text = $this->user['first_name'].", для начала выбери группу\n";
         }
         $text .= "*********************\n" . $this->mainMenu();
         return $text;
@@ -282,12 +282,12 @@ class Commands
             else
             {
                 $text = "\xE2\xAD\x90 ".$subjects['week']['name'] . " \xE2\xAD\x90 \n" .
-                    $this->user['first_name'] . ", у Вас нет занятий \xF0\x9F\x98\x82";
+                    $this->user['first_name'] . ", у Вас завтра нет занятий \xF0\x9F\x98\x82\n";
             }
         }
         else
         {
-            $text = $this->user['first_name'].", для начала выбери группу";
+            $text = $this->user['first_name'].", для начала выбери группу\n";
         }
         $text .= "*********************\n" . $this->mainMenu();
         return $text;
@@ -334,7 +334,7 @@ class Commands
         }
         else
         {
-            $text = $this->user['first_name'].", для начала выбери группу";
+            $text = $this->user['first_name'].", для начала выбери группу\n";
         }
         $text .= "*********************\n" . $this->mainMenu();
         return $text;

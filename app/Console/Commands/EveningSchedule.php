@@ -58,7 +58,7 @@ class EveningSchedule extends Command
             {
                 if($user->group_id != 0)
                 {
-                    if(count(GroupRepository::instance()->getActiveSubjectDay($user->group_id, $dayOfWeek)) > 0) { 
+                    if(count(GroupRepository::instance()->getActiveSubjectDay($user->group_id, $dayOfWeek)) >= 1) {
                         $text = (new Commands($user, 13))->executeCommandNumber();
                     } else {
                         $text = "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\n\nЗавтра у тебя нет пар \xF0\x9F\x98\xB1\nРазвлекайся \xF0\x9F\x8E\x89 \xF0\x9F\x8E\x89 \xF0\x9F\x8E\x89";
