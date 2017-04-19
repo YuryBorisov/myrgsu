@@ -68,6 +68,22 @@ class VKController extends Controller
                             $text = (new Commands($user, 'select_call', $data['object']['body']))->executeCommandText();
                         }
                     }
+                    else if($commandEnd == 'select_distribution')
+                    {
+                        if($data['object']['body'] == 151) {
+                            $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
+                        } else {
+                            $text = (new Commands($user, 'select_distribution', $data['object']['body']))->executeCommandText();
+                        }
+                    }
+                    else if($commandEnd == 'select_news')
+                    {
+                        if($data['object']['body'] == 152) {
+                            $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
+                        } else {
+                            $text = (new Commands($user, 'select_news', $data['object']['body']))->executeCommandText();
+                        }
+                    }
                     else
                     {
                         $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();

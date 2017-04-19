@@ -5,10 +5,12 @@ namespace App\Classes\VK\Commands;
 use App\Models\UserVK;
 use App\Repositories\FacultyRepository;
 use App\Repositories\GroupRepository;
+use App\Repositories\NewsRepositories;
 use App\Repositories\UserVKRepository;
 use App\Repositories\WeekRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class Commands
 {
@@ -26,9 +28,11 @@ class Commands
         'mySchedule', // 1
         'rooms',// 2
         'teachers', // 3
-        4 => 'player',
-        5 => 'wishes',
-        6 => 'feedback', // 4
+        4 => 'news',
+        5 => 'player',
+        6 => 'distribution',
+        7 => 'wishes',
+        8 => 'feedback', // 4
         10 => 'faculty', // 5
         11 => 'group', //6
         12 => 'myScheduleToday', // 7
@@ -37,7 +41,9 @@ class Commands
         15 => 'notifications',
         100 => 'selectFacultyClose',
         1111 => 'selectGroupClose',
-        150 => 'selectCallClose'
+        150 => 'selectCallClose',
+        151 => 'selectDistributionClose',
+        152 => 'selectNewsClose'
      ];
 
     public function __construct($user, $command, $message = null)
@@ -112,6 +118,52 @@ class Commands
             {
                 $text = $this->notifications();
             }
+        } else if($this->command == 'select_distribution')
+        {
+            if($this->message == 1)
+            {
+                if(UserVK::where(['id' => $this->user['id']])->update(['distribution' => $this->user['distribution'] == 0 ? 1 : 0]))
+                {
+                    UserVKRepository::instance()->clear($this->user['id']);
+                    $this->user = UserVKRepository::instance()->get($this->user['id']);
+                    $text = $this->selectDistributionClose();
+                }
+                else
+                {
+                    $text = "Произошла ошибка.\nПопробуйте снова.";
+                }
+            }
+            else
+            {
+                $text = $this->distribution();
+            }
+        }
+        else if($this->command == 'select_news')
+        {
+            if($n = NewsRepositories::instance()->get($this->message))
+            {
+                $date = explode('-', $n['date']);
+                $date = "{$date[2]}/{$date[1]}/{$date[0]}";
+                $text = "\xF0\x9F\x93\xB0 Новость №{$n['id']}\n\xF0\x9F\x93\x86 Дата: {$date}\n";
+                UserVKRepository::instance()->addCommandEnd($this->user['id'], false);
+                self::sendMessage([
+                    'message' => $text,
+                    'user_id' => $this->user['id'],
+                    'access_token' => env('VK_BOT_KEY'),
+                    'v' => '5.0'
+                ]);
+                self::sendAttachment([
+                    'user_id' => $this->user['id'],
+                    'access_token' => env('VK_BOT_KEY'),
+                    'attachment' => "photo{$n['vk_photo_id']}",
+                    'v' => '5.0'
+                ]);
+                $text = $n['full_text']."\n\xF0\x9F\x92\xAC Комментировать: https://vk.com/photo{$n['vk_photo_id']}\n\xF0\x9F\x93\xA2 Источник: {$n['link']}\n*************\n4. \xE2\xAC\x85 Вернуться назад\n0. \xF0\x9F\x8C\x80 Главное меню";
+            }
+            else
+            {
+                $text = "Такой новости не существует\n*****************\nЧтобы прочитать полностью новость, отправьте её номер.\nДля выхода из просмотра новостей отправьте цифру 152.";
+            }
         }
         return $text;
     }
@@ -132,7 +184,8 @@ class Commands
 
     private function mainMenu()
     {
-        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xF0\x9F\x8E\xA7 Плеер\n5. \xE2\x9A\xA1 Пожелания/Улучшения\n6. \xF0\x9F\x8E\xA4 Feedback";
+        $t = $this->user['distribution'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
+        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xF0\x9F\x93\xB0 Новости РГСУ\n5. \xF0\x9F\x8E\xA7 Плеер\n6. \xF0\x9F\x93\xA2 Рассылка [{$t}]\n7. \xE2\x9A\xA1 Пожелания/Улучшения\n8. \xF0\x9F\x8E\xA4 Feedback";
     }
 
     private function mySchedule()
@@ -371,7 +424,7 @@ class Commands
             'attachment' => 'audio'.$audio['audio']['owner_id'].'_'.$audio['audio']['aid'],
             'v' => '5.0'
         ];
-        self::sendAudio($arr);
+        self::sendAttachment($arr);
         return "Добавь свою музыку \xF0\x9F\x8E\xA7\nhttps://vk.com/topic-144482898_35459441\nОтправь цифру 4, чтобы получить ещё песню.\n*********************\n" . $this->mainMenu();
         //return false; //return "У тебя есть любимые треки? \xF0\x9F\x8E\xA7\nЕсли есть, то присоединяйся https://vk.com/topic-144482898_35459441\n*********************\n" . $this->mainMenu();
     }
@@ -414,6 +467,42 @@ class Commands
         return $this->mySchedule();
     }
 
+    private function distribution()
+    {
+        $t = $this->user['distribution'] == 0 ? 'включена' : 'выключена';
+        $m = $this->user['distribution'] == 0 ? 'выключить' : 'включить';
+        $com = '1. '.($this->user['distribution'] == 0 ? "\xE2\x9D\x8E Выключить" : "\xE2\x9C\x85 Включить");
+        $text = "\xF0\x9F\x94\x8A Рассылка (сейчас твоя рассылка на новости проекта и о разных событиях {$t})\n\n{$com}\n\nОтправьте цифру 1 если вы хотите {$m} рассылку.\nДля выхода отправьте цифру 151.";
+        UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_distribution');
+        return $text;
+    }
+
+    private function selectDistributionClose()
+    {
+        UserVKRepository::instance()->addCommandEnd($this->user['id'], false);
+        return $this->mainMenu();
+    }
+
+    private function news()
+    {
+        $news = NewsRepositories::instance()->getAll();
+        $text = "\xF0\x9F\x93\xB0 Новости РГСУ\n\n";
+        foreach (array_splice($news, 0, count($news) - (count($news) - 6)) as $n)
+        {
+            $date = explode('-', $n['date']);
+            $date = "{$date[2]}/{$date[1]}/{$date[0]}";
+            $text .= "\xF0\x9F\x93\xB0 Новость №{$n['id']}\n\xF0\x9F\x93\x86 Дата: {$date}\n\xF0\x9F\x93\x91 Заголовок: {$n['title']}\n\xF0\x9F\x93\x95 Краткое описание: {$n['short_text']}\n\xF0\x9F\x92\xAC Комментировать: https://vk.com/photo{$n['vk_photo_id']}\n\xF0\x9F\x93\xA2 Источник: {$n['link']}\n\n";
+        }
+        UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_news');
+        return $text."**************\nЧтобы прочитать полностью новость, отправьте её номер.\nДля выхода из просмотра новостей отправьте цифру 152.";
+    }
+
+    private function selectNewsClose()
+    {
+        UserVKRepository::instance()->addCommandEnd($this->user['id'], false);
+        return $this->mainMenu();
+    }
+
     public static function sendMessage($arr)
     {
         $curl = curl_init();
@@ -443,14 +532,14 @@ class Commands
         return $out;
     }
 
-    public static function sendAudio($arr)
+    public static function sendAttachment($arr)
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.send');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
-        curl_exec($curl);
+        $out = curl_exec($curl);
         curl_close($curl);
     }
 
