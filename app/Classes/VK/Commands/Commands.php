@@ -158,6 +158,7 @@ class Commands
                     'attachment' => "photo{$n['vk_photo_id']}",
                     'v' => '5.0'
                 ]);
+sleep(1);
                 $text = $n['full_text']."\n\xF0\x9F\x92\xAC Комментировать: https://vk.com/photo{$n['vk_photo_id']}\n\xF0\x9F\x93\xA2 Источник: {$n['link']}\n*************\n4. \xE2\xAC\x85 Вернуться назад\n0. \xF0\x9F\x8C\x80 Главное меню";
             }
             else
@@ -485,17 +486,18 @@ class Commands
 
     private function news()
     {
-        $news = NewsRepositories::instance()->getAll();
-        $text = "\xF0\x9F\x93\xB0 Новости РГСУ\n\n";
-        foreach (array_splice($news, 0, count($news) - (count($news) - 3)) as $n)
-        {
-            $date = explode('-', $n['date']);
-            $date = "{$date[2]}/{$date[1]}/{$date[0]}";
-            $text .= "\xF0\x9F\x93\xB0 Новость №{$n['id']}\n\xF0\x9F\x93\x86 Дата: {$date}\n\xF0\x9F\x93\x91 Заголовок: {$n['title']}\n\xF0\x9F\x93\x95 Краткое описание: {$n['short_text']}\n\xF0\x9F\x92\xAC Комментировать: https://vk.com/photo{$n['vk_photo_id']}\n\xF0\x9F\x93\xA2 Источник: {$n['link']}\n\n";
-        }
-        UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_news');
-        return $text."**************\nЧтобы прочитать полностью новость, отправьте её номер.\nДля выхода из просмотра новостей отправьте цифру 152.";
-    }
+        //$news = NewsRepositories::instance()->getAll();
+        //$text = "\xF0\x9F\x93\xB0 Новости РГСУ\n\n";
+        //foreach (array_splice($news, 0, count($news) - (count($news) - 3)) as $n)
+        //{
+        //    $date = explode('-', $n['date']);
+        //    $date = "{$date[2]}/{$date[1]}/{$date[0]}";
+        //    $text .= "\xF0\x9F\x93\xB0 Новость №{$n['id']}\n\xF0\x9F\x93\x86 Дата: {$date}\n\xF0\x9F\x93\x91 Заголовок: {$n['title']}\n\xF0\x9F\x93\x95 Краткое описание: {$n['short_text']}\n\xF0\x9F\x92\xAC Комментировать: https://vk.com/photo{$n['vk_photo_id']}\n\xF0\x9F\x93\xA2 Источник: {$n['link']}\n\n";
+       // }
+        //UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_news');
+        //return $text."**************\nЧтобы прочитать полностью новость, отправьте её номер.\nДля выхода из просмотра новостей отправьте цифру 152.";
+ return "Привет ✌\nКоманда '📰 Новости РГСУ' перестала работать [Заработает в ближайшее время]";   
+ }
 
     private function selectNewsClose()
     {
@@ -510,7 +512,8 @@ class Commands
         curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
-        curl_exec($curl);
+        $out = curl_exec($curl);
+        Log::info($out);
         curl_close($curl);
     }
 
