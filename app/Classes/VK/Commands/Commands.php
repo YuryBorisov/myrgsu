@@ -487,7 +487,7 @@ class Commands
     {
         $news = NewsRepositories::instance()->getAll();
         $text = "\xF0\x9F\x93\xB0 Новости РГСУ\n\n";
-        foreach (array_splice($news, 0, count($news) - (count($news) - 4)) as $n)
+        foreach (array_splice($news, 0, count($news) - (count($news) - 3)) as $n)
         {
             $date = explode('-', $n['date']);
             $date = "{$date[2]}/{$date[1]}/{$date[0]}";
