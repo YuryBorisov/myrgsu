@@ -48,7 +48,7 @@ class SendMessage extends Command
                 $i = 0;
             }
             Commands::sendMessage([
-                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nКоманда '\xF0\x9F\x93\xB0 Новости РГСУ' перестала работать [Заработает в ближайшее время]",
+                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nЕсли ты умеешь рисовать [Нужен дизайнер] и хочешь поучаствовать в разработке приложения под платформы android, ios, vk, telegram [Для студентов и преподавателей РГСУ]\nОтправь цифру 8 для обратной связи со мной.",
                 'user_id' => $user['id'],
                 'access_token' => env('VK_BOT_KEY'),
                 'v' => '5.0'
