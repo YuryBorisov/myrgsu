@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('morning_schedule')->twiceDaily(8, 21);
+        $schedule->command('morning_schedule')->dailyAt('7:00');
     }
 
     /**
