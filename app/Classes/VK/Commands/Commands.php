@@ -229,7 +229,7 @@ class Commands
                 foreach ($users as $user)
                 {
                     self::sendMessage([
-                        'message' => "В комнату зашел {$this->user['first_name']} {$this->user['last_name']}",
+                        'message' => "РГСУ БОТ: к нам присоединился {$this->user['first_name']} {$this->user['last_name']}",
                         'user_id' => $user->user_id,
                         'access_token' => env('VK_BOT_KEY'),
                         'v' => '5.0'
