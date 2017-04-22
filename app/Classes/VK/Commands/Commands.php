@@ -288,11 +288,12 @@ class Commands
                     $text2 = 'пользователя';
             }
             $text .= "{$room['id']}. {$room['name']} [{$count} {$text2}]\n";
-            if($room['id'] != 5)
-            $tg .= "{$room['name']} - {$room['tg_link']}\n";
+            //if($room['id'] != 5)
+            //$tg .= "{$room['name']} - {$room['tg_link']}\n";
         }
+        $tg = "Список чатов в Telegram: https://vk.com/rgsu_bot?w=wall-144482898_8";
         UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_chat');
-        return $text."\nСписок чатов в Telegram:\n{$tg}\n**************\nПришли номер комнаты или отправь цифру 200 для выхода в главное меню.";
+        return $text."\n{$tg}\n**************\nПришли номер комнаты или отправь цифру 200 для выхода в главное меню.";
     }
 
     public function executeCommandNumber()
