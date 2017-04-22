@@ -71,7 +71,7 @@ class Commands
             foreach ($users as $user)
             {
                 self::sendMessage([
-                    'message' => "{$this->user['first_name']} {$this->user['last_name']} вышел из комнаты.",
+                    'message' => "РГСУ БОТ: {$this->user['first_name']} {$this->user['last_name']} вышел из комнаты.",
                     'user_id' => $user->user_id,
                     'access_token' => env('VK_BOT_KEY'),
                     'v' => '5.0'
@@ -94,7 +94,7 @@ class Commands
         foreach ($users as $user)
         {
             self::sendMessage([
-                'message' => "{$this->user['first_name']} {$this->user['last_name']} вышел из комнаты.",
+                'message' => "РГСУ БОТ: {$this->user['first_name']} {$this->user['last_name']} вышел из комнаты.",
                 'user_id' => $user->user_id,
                 'access_token' => env('VK_BOT_KEY'),
                 'v' => '5.0'
