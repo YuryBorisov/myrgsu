@@ -2,7 +2,9 @@
 
 namespace App\Classes\VK\Commands;
 
+use App\Models\ChatRoomUser;
 use App\Models\UserVK;
+use App\Repositories\ChatRoomRepository;
 use App\Repositories\FacultyRepository;
 use App\Repositories\GroupRepository;
 use App\Repositories\NewsRepositories;
@@ -10,7 +12,6 @@ use App\Repositories\UserVKRepository;
 use App\Repositories\WeekRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class Commands
 {
@@ -30,9 +31,10 @@ class Commands
         'teachers', // 3
         4 => 'news',
         5 => 'player',
-        6 => 'distribution',
-        7 => 'wishes',
-        8 => 'feedback', // 4
+        6 => 'chat',
+        7 => 'distribution',
+        8 => 'wishes',
+        9 => 'feedback', // 4
         10 => 'faculty', // 5
         11 => 'group', //6
         12 => 'myScheduleToday', // 7
@@ -43,14 +45,62 @@ class Commands
         1111 => 'selectGroupClose',
         150 => 'selectCallClose',
         151 => 'selectDistributionClose',
-        152 => 'selectNewsClose'
+        152 => 'selectNewsClose',
+        200 => 'selectChatRoomClose',
+        201 => 'refreshChatRoom',
+        202 => 'exitInMenu'
      ];
 
-    public function __construct($user, $command, $message = null)
+    protected $data;
+
+    public function __construct($user, $command, $message = null, $data = null)
     {
         $this->command = $command;
         $this->user = $user;
         $this->message = $message;
+        $this->data = $data;
+    }
+
+    private function exitInMenu()
+    {
+        if(UserVKRepository::instance()->getCommandEnd($this->user['id']) == 'room_send_message')
+        {
+            $room = ChatRoomUser::whereUserId($this->user['id'])->first();
+            ChatRoomUser::whereUserId($this->user['id'])->delete();
+            $users = ChatRoomUser::whereRoomId($room['room_id'])->get();
+            foreach ($users as $user)
+            {
+                self::sendMessage([
+                    'message' => "{$this->user['first_name']} {$this->user['last_name']} вышел из комнаты.",
+                    'user_id' => $user->user_id,
+                    'access_token' => env('VK_BOT_KEY'),
+                    'v' => '5.0'
+                ]);
+            }
+            UserVKRepository::instance()->addCommandEnd($this->user['id'], false);
+            return $this->mainMenu();
+        }
+        else
+        {
+            return "Нет такой команды\n*********************\n" . $this->mainMenu();
+        }
+    }
+
+    private function refreshChatRoom()
+    {
+        $room = ChatRoomUser::whereUserId($this->user['id'])->first();
+        ChatRoomUser::whereUserId($this->user['id'])->delete();
+        $users = ChatRoomUser::whereRoomId($room['room_id'])->get();
+        foreach ($users as $user)
+        {
+            self::sendMessage([
+                'message' => "{$this->user['first_name']} {$this->user['last_name']} вышел из комнаты.",
+                'user_id' => $user->user_id,
+                'access_token' => env('VK_BOT_KEY'),
+                'v' => '5.0'
+            ]);
+        }
+        return $this->chat();
     }
 
     public function executeCommandText() {
@@ -166,7 +216,83 @@ class Commands
                 $text = "Такой новости не существует\n*****************\nЧтобы прочитать полностью новость, отправьте её номер.\nДля выхода из просмотра новостей отправьте цифру 152.";
             }
         }
+        else if($this->command == 'select_chat')
+        {
+            if($room = ChatRoomRepository::instance()->get($this->message))
+            {
+                ChatRoomUser::whereUserId($this->user['id'])->delete();
+                $users = ChatRoomUser::whereRoomId($room['id'])->get();
+                ChatRoomUser::create([
+                    'user_id' => $this->user['id'],
+                    'room_id' => $room['id']
+                ]);
+                foreach ($users as $user)
+                {
+                    self::sendMessage([
+                        'message' => "В комнату зашел {$this->user['first_name']} {$this->user['last_name']}",
+                        'user_id' => $user->id,
+                        'access_token' => env('VK_BOT_KEY'),
+                        'v' => '5.0'
+                    ]);
+                }
+                $text = "РГСУ БОТ: Вы зашли в комнату {$room['name']}.\nДля того, чтобы выйти из комнаты наберите 201.\nДля выхода в главное меню наберите 202.";
+                UserVKRepository::instance()->addCommandEnd($this->user['id'], 'room_send_message');
+            }
+            else
+            {
+                $text = "Такой комнаты не существует\n\n*************\nПришли номер комнаты или отправь цифру 200 для выхода в главное меню.";
+            }
+        }
+        else if ($this->command == 'room_send_message')
+        {
+            $room = ChatRoomUser::whereUserId($this->user['id'])->first();
+            $users = ChatRoomUser::whereRoomId($room->room_id)->get();
+            foreach ($users as $user)
+            {
+                if ($this->user['id'] != $user->user_id)
+                {
+                    self::sendMessage([
+                        'message' => "{$this->user['first_name']} {$this->user['last_name']}: {$this->message}",
+                        'user_id' => $user->user_id,
+                        'access_token' => env('VK_BOT_KEY'),
+                        'v' => '5.0'
+                    ]);
+                }
+            }
+            self::markAsRead([
+                'peer_id' => $this->user['id'],
+                'access_token' => env('VK_BOT_KEY'),
+                'v' => '5.0'
+            ]);
+            $text = -1;
+        }
         return $text;
+    }
+
+    private function chat()
+    {
+        $text = "\xF0\x9F\x92\xAC Чат.\n\nСписок комнат:\n";
+        $tg = '';
+        foreach (ChatRoomRepository::instance()->getAll() as $room)
+        {
+            $count = ChatRoomUser::whereRoomId($room['id'])->count();
+            $text2 = "пользователей";
+            switch ($count)
+            {
+                case 1:
+                    $text2 = 'пользователь';
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                    $text2 = 'пользователя';
+            }
+            $text .= "{$room['id']}. {$room['name']} [{$count} {$text2}]\n";
+            if($room['id'] != 5)
+            $tg .= "{$room['name']} - {$room['tg_link']}\n";
+        }
+        UserVKRepository::instance()->addCommandEnd($this->user['id'], 'select_chat');
+        return $text."\nСписок чатов в Telegram:\n{$tg}\n**************\nПришли номер комнаты или отправь цифру 200 для выхода в главное меню.";
     }
 
     public function executeCommandNumber()
@@ -186,7 +312,7 @@ class Commands
     private function mainMenu()
     {
         $t = $this->user['distribution'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
-        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xF0\x9F\x93\xB0 Новости РГСУ\n5. \xF0\x9F\x8E\xA7 Плеер\n6. \xF0\x9F\x93\xA2 Рассылка [{$t}]\n7. \xE2\x9A\xA1 Пожелания/Улучшения\n8. \xF0\x9F\x8E\xA4 Feedback";
+        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xF0\x9F\x93\xB0 Новости РГСУ\n5. \xF0\x9F\x8E\xA7 Плеер\n6. \xF0\x9F\x92\xAC Чат\n7. \xF0\x9F\x93\xA2 Рассылка [{$t}]\n8. \xE2\x9A\xA1 Пожелания/Улучшения\n9. \xF0\x9F\x8E\xA4 Feedback";
     }
 
     private function mySchedule()
@@ -468,6 +594,12 @@ class Commands
         return $this->mySchedule();
     }
 
+    private function selectChatRoomClose()
+    {
+        UserVKRepository::instance()->addCommandEnd($this->user['id'], false);
+        return $this->mainMenu();
+    }
+
     private function distribution()
     {
         $t = $this->user['distribution'] == 0 ? 'включена' : 'выключена';
@@ -525,7 +657,17 @@ class Commands
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
         $out = curl_exec($curl);
-        Log::info($out);
+        curl_close($curl);
+    }
+
+    public static function markAsRead($arr)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, 'https://api.vk.com/method/messages.markAsRead');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
+        $out = curl_exec($curl);
         curl_close($curl);
     }
 

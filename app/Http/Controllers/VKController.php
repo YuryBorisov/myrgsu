@@ -84,6 +84,22 @@ class VKController extends Controller
                             $text = (new Commands($user, 'select_news', $data['object']['body']))->executeCommandText();
                         }
                     }
+                    else if($commandEnd == 'select_chat')
+                    {
+                        if($data['object']['body'] == 200) {
+                            $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
+                        } else {
+                            $text = (new Commands($user, 'select_chat', $data['object']['body']))->executeCommandText();
+                        }
+                    }
+                    else if($commandEnd == 'room_send_message')
+                    {
+                        if($data['object']['body'] == 201 || $data['object']['body'] == 202) {
+                            $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
+                        } else {
+                            $text = (new Commands($user, 'room_send_message', $data['object']['body'], $data))->executeCommandText();
+                        }
+                    }
                     else
                     {
                         $text = (new Commands($user, $data['object']['body']))->executeCommandNumber();
@@ -93,13 +109,18 @@ class VKController extends Controller
                 {
                     $text = "{$user['response'][0]['first_name']} 3(\nПроизошла ошибка.\nПопробуйте ещё раз =]";
                 }
+                if($text == -1)
+                {
+                    echo("ok");
+                    exit;
+                }
                 Commands::sendMessage([
                     'message' => $text,
                     'user_id' => $user['id'],
                     'access_token' => env('VK_BOT_KEY'),
                     'v' => '5.0'
                 ]);
-                return 'ok';
+                echo("ok");
                 break;
         }
     }

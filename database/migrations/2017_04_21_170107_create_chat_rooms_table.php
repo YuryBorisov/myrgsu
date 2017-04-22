@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNewsTable extends Migration
+class CreateChatRoomsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,9 @@ class CreateNewsTable extends Migration
      */
     public function up()
     {
-        Schema::create('news', function (Blueprint $table) {
+        Schema::create('chat_rooms', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('title');
-            $table->text('short_text');
-            $table->text('full_text');
-            $table->string('link');
-            $table->date('date');
+            $table->string('name');
         });
     }
 
@@ -30,6 +26,6 @@ class CreateNewsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('news');
+        Schema::dropIfExists('chat_rooms');
     }
 }

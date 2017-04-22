@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddVkPhotoIdNews extends Migration
+class CreateChatRoomUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddVkPhotoIdNews extends Migration
      */
     public function up()
     {
-        Schema::table('news', function (Blueprint $table) {
-            $table->string('vk_photo_id')->after('link');
+        Schema::create('chat_room_users', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('room_id')->unsigned();
+            $table->integer('user_id')->unsigned();
         });
     }
 
@@ -25,8 +27,6 @@ class AddVkPhotoIdNews extends Migration
      */
     public function down()
     {
-        Schema::table('news', function (Blueprint $table) {
-            $table->dropColumn('vk_photo_id');
-        });
+        Schema::dropIfExists('chat_room_users');
     }
 }
