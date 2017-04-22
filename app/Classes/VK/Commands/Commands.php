@@ -230,7 +230,7 @@ class Commands
                 {
                     self::sendMessage([
                         'message' => "В комнату зашел {$this->user['first_name']} {$this->user['last_name']}",
-                        'user_id' => $user->id,
+                        'user_id' => $user->user_id,
                         'access_token' => env('VK_BOT_KEY'),
                         'v' => '5.0'
                     ]);
