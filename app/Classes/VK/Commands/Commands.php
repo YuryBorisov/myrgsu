@@ -553,7 +553,7 @@ class Commands
             'v' => '5.0'
         ];
         self::sendAttachment($arr);
-        return "Добавь свою музыку \xF0\x9F\x8E\xA7\nhttps://vk.com/topic-144482898_35459441\nОтправь цифру 4, чтобы получить ещё песню.\n*********************\n" . $this->mainMenu();
+        return "Добавь свою музыку \xF0\x9F\x8E\xA7\nhttps://vk.com/topic-144482898_35459441\nОтправь цифру 5, чтобы получить ещё песню.\n*********************\n" . $this->mainMenu();
         //return false; //return "У тебя есть любимые треки? \xF0\x9F\x8E\xA7\nЕсли есть, то присоединяйся https://vk.com/topic-144482898_35459441\n*********************\n" . $this->mainMenu();
     }
 
