@@ -313,7 +313,7 @@ class Commands
     private function mainMenu()
     {
         $t = $this->user['distribution'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
-        return "1. \xF0\x9F\x9A\x80 Моё расписание\n2. \xF0\x9F\x9B\x80 Аудитории\n3. \xF0\x9F\x91\xBA Преподаватели\n4. \xF0\x9F\x93\xB0 Новости РГСУ\n5. \xF0\x9F\x8E\xA7 Плеер\n6. \xF0\x9F\x92\xAC Чат\n7. \xF0\x9F\x93\xA2 Рассылка [{$t}]\n8. \xE2\x9A\xA1 Пожелания/Улучшения\n9. \xF0\x9F\x8E\xA4 Feedback";
+        return "1. \xF0\x9F\x93\x85 Моё расписание\n2. \xF0\x9F\x9A\xAA Аудитории\n3. \xF0\x9F\x91\x94 Преподаватели\n4. \xF0\x9F\x93\xB0 Новости РГСУ\n5. \xF0\x9F\x8E\xA7 Плеер\n6. \xF0\x9F\x92\xAC Чат\n7. \xF0\x9F\x93\xA2 Рассылка [{$t}]\n8. \xE2\x9A\xA1 Пожелания/Улучшения\n9. \xF0\x9F\x8E\xA4 Feedback";
     }
 
     private function mySchedule()
@@ -330,7 +330,7 @@ class Commands
                     if($group['id'] == $this->user['group_id'])
                     {
                         $callText = $this->user['call'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
-                        $text .= "11. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n12. \xF0\x9F\x8E\x89 Сегодняшние занятия\n13. \xE2\x8F\xA9 Завтрашнии занятия\n14. \xF0\x9F\x8E\x8A Показать за неделю\n15. \xF0\x9F\x94\x8A Уведомления [{$callText}]\n\n0. \xE2\xAC\x85 Главное меню";
+                        $text .= "11. \xF0\x9F\x8E\x93 Группа: {$group['short_name']}\n12. \xF0\x9F\x93\x84 Сегодняшние занятия\n13. \xE2\x8F\xA9 Завтрашнии занятия\n14. \xF0\x9F\x93\x91 Показать за неделю\n15. \xF0\x9F\x94\x8A Уведомления [{$callText}]\n\n0. \xE2\xAC\x85 Главное меню";
                         break;
                     }
                 }
