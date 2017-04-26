@@ -40,7 +40,7 @@ class SendMessage extends Command
     public function handle()
     {
         $i = 0;
-        foreach (UserVK::get() as $user)
+        foreach (UserVK::whereDistribution(0)->get() as $user)
         {
             if($i == 3)
             {
@@ -48,7 +48,7 @@ class SendMessage extends Command
                 $i = 0;
             }
             Commands::sendMessage([
-                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nВ главном меню добавлена новая команда '\xF0\x9F\x92\xAC Чат'\nОтправь цифру 0, чтобы увидеть новое меню.\nСписок чатов в Telegram: https://vk.com/rgsu_bot?w=wall-144482898_8",
+                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nУ нас новая аватарка [vk.com/photo-144482898_456239042], оцени.\n[Автор: Вика Дил (vk.com/weekurt_mee)]\nУ нас есть общий чат РГСУ в telegram  t.me/my_rgsu присоединяйся.\nСписок всех чатов: vk.com/wall-144482898_8",
                 'user_id' => $user['id'],
                 'access_token' => env('VK_BOT_KEY'),
                 'v' => '5.0'
