@@ -658,6 +658,7 @@ class Commands
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($arr));
         $out = curl_exec($curl);
+        Log::info($out);
         curl_close($curl);
     }
 

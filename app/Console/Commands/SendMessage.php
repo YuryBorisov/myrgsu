@@ -48,7 +48,7 @@ class SendMessage extends Command
                 $i = 0;
             }
             Commands::sendMessage([
-                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nУ нас новая аватарка [vk.com/photo-144482898_456239042], оцени.\n[Автор: Вика Дил (vk.com/weekurt_mee)]\nУ нас есть общий чат РГСУ в telegram  t.me/my_rgsu присоединяйся.\nСписок всех чатов: vk.com/wall-144482898_8",
+                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nНе учимся 1, 8, 9\nХороших выходных \xF0\x9F\x98\x89",
                 'user_id' => $user['id'],
                 'access_token' => env('VK_BOT_KEY'),
                 'v' => '5.0'
