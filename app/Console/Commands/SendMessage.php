@@ -47,10 +47,16 @@ class SendMessage extends Command
                 sleep(5);
                 $i = 0;
             }
-            Commands::sendMessage([
-                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nНе учимся 1, 8, 9\nХороших выходных \xF0\x9F\x98\x89",
-                'user_id' => $user['id'],
+            //Commands::sendMessage([
+             //   'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nНе учимся 1, 8, 9\nХороших выходных \xF0\x9F\x98\x89",
+              //  'user_id' => $user['id'],
+              //  'access_token' => env('VK_BOT_KEY'),
+              //  'v' => '5.0'
+            //]);
+            Commands::sendAttachment([
+                'user_id' => $user->id,
                 'access_token' => env('VK_BOT_KEY'),
+                'attachment' => "photo-144482898_456239043",
                 'v' => '5.0'
             ]);
             echo $user->id."\n";
