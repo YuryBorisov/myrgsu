@@ -55,8 +55,9 @@ class SendMessage extends Command
             //]);
             Commands::sendAttachment([
                 'user_id' => $user->id,
+                'message' => "С Праздником.\nС Днём Победы!!!",
                 'access_token' => env('VK_BOT_KEY'),
-                'attachment' => "photo-144482898_456239043",
+                'attachment' => "photo-144482898_456239046",
                 'v' => '5.0'
             ]);
             echo $user->id."\n";
