@@ -15,10 +15,6 @@ Route::get('/', function() {
     return 123;
 });
 
-Route::get('/ttt', function () {
-
-});
-
 Route::group(['prefix' => 'telegram'], function (){
     Route::match(['post', 'get'], '334312989:AAEWEJVmWrh6XkNHKWdo_1waxE0r2G7eTjo', ['as' => 'telegram.message', 'uses' => 'TelegramController@message']);
     Route::group(['prefix' => 'hook'], function (){

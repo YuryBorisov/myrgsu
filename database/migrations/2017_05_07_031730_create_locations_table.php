@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDistributionUsersVk extends Migration
+class CreateLocationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddDistributionUsersVk extends Migration
      */
     public function up()
     {
-        Schema::table('users_vk', function (Blueprint $table) {
-            $table->tinyInteger('distribution')->after('call')->unsigned()->default(0);
+        Schema::create('locations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
         });
     }
 
@@ -25,8 +26,6 @@ class AddDistributionUsersVk extends Migration
      */
     public function down()
     {
-        Schema::table('users_vk', function (Blueprint $table) {
-            $table->dropColumn('distribution');
-        });
+        Schema::dropIfExists('locations');
     }
 }

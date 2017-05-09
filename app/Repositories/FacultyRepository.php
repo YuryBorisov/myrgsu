@@ -44,7 +44,7 @@ class FacultyRepository extends BaseRepository
         return $this->getCachedAll()->get('all');
     }
 
-    public function getById($id)
+    public function getById($id, $serviceId = 0)
     {
         if(!$this->isById($id))
         {
