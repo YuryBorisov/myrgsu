@@ -160,7 +160,7 @@ class PersonalAreaCommand extends BaseVKCommand
                 {
                     Request::sendMessage([
                         'user_id' => $this->user['user_id'],
-                        'message' => "Ваше сообщение успешно отправлено, скоро я сообщу скольких я оповестил. \n".self::SEPARATOR."\n".$this->view(false)
+                        'message' => "Ваше сообщение успешно отправлено.\n".self::SEPARATOR."\n".$this->view(false)
                     ]);
                     $i = 0;
                     set_time_limit(1000);
