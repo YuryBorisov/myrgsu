@@ -172,6 +172,7 @@ class PersonalAreaCommand extends BaseVKCommand
                                 'user_id' => $user['user_id'],
                                 'message' => $this->user['first_name'].' '.$this->user['last_name'].' [https://vk.com/id'.$this->user['user_id'].']: '.$this->user['broadcasting']
                             ]);
+                            sleep(1);
                             $i++;
                         }
                     }
