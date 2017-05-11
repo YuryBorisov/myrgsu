@@ -274,7 +274,7 @@ class ScheduleCommand extends BaseVKCommand
                 else
                 {
                     $this->text = "\xE2\xAD\x90 ".$subjects['week']['name'] . " \xE2\xAD\x90 \n" .
-                        $this->user['first_name'] . ", у Вас завтра нет занятий \xF0\x9F\x98\x82\n";
+                        $this->user['first_name'] . ", у Вас завтра нет занятий \xF0\x9F\x98\x82\n\n";
                 }
             }
             else

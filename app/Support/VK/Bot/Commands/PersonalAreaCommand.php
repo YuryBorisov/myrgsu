@@ -4,9 +4,11 @@ namespace App\Support\VK\Bot\Commands;
 
 use App\Models\Service;
 use App\Models\User;
+use App\Repositories\BroadcastingRepository;
 use App\Repositories\LocationRepository;
 use App\Repositories\UserRepository;
 use App\Support\VK\Bot\Manager;
+use App\Support\VK\Bot\Request;
 
 class PersonalAreaCommand extends BaseVKCommand
 {
@@ -14,7 +16,7 @@ class PersonalAreaCommand extends BaseVKCommand
     protected $commands = [
         self::MAIN_MENU_VIEW,
         self::SCHEDULE_VIEW,
-        2,
+        self::PERSONAL_AREA_SDO_VIEW,
         self::PERSONAL_AREA_LOCATION_VIEW,
         self::PERSONAL_BROADCASTING_VIEW
     ];
@@ -116,13 +118,85 @@ class PersonalAreaCommand extends BaseVKCommand
     {
         if(self::CANCELED != $this->message)
         {
-
+            $l = mb_strlen($this->message);
+            if($l >= 3 && $l <= 100)
+            {
+                $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::PERSONAL_BROADCASTING_SELECT_LOCATION);
+                $this->user = UserRepository::instance()->addMessageForBroadcasting($this->user['user_id'], Service::VK, $this->message);
+                $this->text = "Отлично, теперь выбери куда мы это всё отправим.\n\n";
+                foreach (BroadcastingRepository::instance()->all() as $b)
+                {
+                    $this->text .= $b['id'].'. '.$b['name']."\n";
+                }
+                $this->text .= "\nПришли мне цифру или отправь 100 для выхода.";
+            }
+            else
+            {
+                $this->text = "Ваше сообщение должно состоять от 3 до 100 символов.\nПришлите ещё раз или отправьте цифру 100 для выхода.";
+            }
         }
         else
         {
             $this->text = $this->view();
         }
         return $this->text;
+    }
+
+    public function selectLocationBroadcasting()
+    {
+        if(self::CANCELED != $this->message)
+        {
+            if($b = BroadcastingRepository::instance()->get($this->message))
+            {
+                if($b['table'] == BroadcastingRepository::TABLE_LOCATION)
+                {
+                    $users = User::where([['location_id', $b['table_id']], ['service_id', Service::VK], ['distribution', 0], ['user_id', '!=', $this->user['user_id']]])->get();
+                }
+                else
+                {
+                    $users = User::where([['faculty_id', $b['table_id']], ['service_id', Service::VK], ['distribution', 0], ['user_id', '!=', $this->user['user_id']]])->get();
+                }
+                if($users->count() > 0)
+                {
+                    Request::sendMessage([
+                        'user_id' => $this->user['user_id'],
+                        'message' => "Ваше сообщение успешно отправлено, скоро я сообщу скольких я оповестил. \n".self::SEPARATOR."\n".$this->view(false)
+                    ]);
+                    $i = 0;
+                    set_time_limit(1000);
+                    foreach ($users as $user)
+                    {
+                        if($this->user['user_id'] != $user['user_id'])
+                        {
+                            Request::sendMessage([
+                                'user_id' => $user['user_id'],
+                                'message' => $this->user['first_name'].' '.$this->user['last_name'].' [https://vk.com/id'.$this->user['user_id'].']: '.$this->user['broadcasting']
+                            ]);
+                            $i++;
+                        }
+                    }
+                    $this->text = 'Ваше сообщение отправлено '.$i.' пользователю(-ям)';
+                }
+                else
+                {
+                    $this->text = "Тут пусто \xF0\x9F\x98\x93\nПришлите ещё раз или отправьте цифру 100 для выхода.";
+                }
+            }
+            else
+            {
+                $this->text = "Я не смог найти.\nПришлите ещё раз или отправьте цифру 100 для выхода.";
+            }
+        }
+        else
+        {
+            $this->text = $this->view();
+        }
+        return $this->text;
+    }
+
+    public function sdoView()
+    {
+        return "В данный момент пока не работает =]\n".self::SEPARATOR."\n".$this->view(false);
     }
 
 }

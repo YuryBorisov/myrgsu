@@ -22,7 +22,9 @@ class VKController extends Controller
             case 'message_new':
                 if(!$user = ($repository = UserRepository::instance())->get($data['object']['user_id'], Service::VK))
                 {
-                    $user = json_decode($t = file_get_contents("https://api.vk.com/method/users.get?user_ids={$data['object']['user_id']}&v=5.0"), true);
+                    $user = json_decode(Request::getUser([
+                        'user_ids' => $data['object']['user_id']
+                    ]), true);
                     $user = User::create([
                         'service_id' => Service::VK,
                         'user_id' => $data['object']['user_id'],
@@ -32,7 +34,7 @@ class VKController extends Controller
                     ]);
                     $user = $repository->addCommand($user['user_id'], Service::VK, BaseVKCommand::WELCOME_VIEW);
                 }
-                if($text = (new Manager($user, $data))->run())
+                if(strlen($text = (new Manager($user, $data))->run()) > 0)
                 {
                     Request::sendMessage([
                         'user_id' => $user['user_id'],

@@ -19,6 +19,10 @@ abstract class BaseVKCommand extends BaseCommand
 
     const YES = 1;
 
+    const CHAT_ROOM_EXIT = 101;
+
+    const CHAT_EXIT = self::CANCELED;
+
     const MAIN_MENU_VIEW = [
         'class' => MainMenuCommand::class,
         'method' => self::VIEW
@@ -42,6 +46,11 @@ abstract class BaseVKCommand extends BaseCommand
     const PERSONAL_AREA_SELECT = [
         'class' => PersonalAreaCommand::class,
         'method' => self::MAIN_SELECT
+    ];
+
+    const PERSONAL_AREA_SDO_VIEW = [
+        'class' => PersonalAreaCommand::class,
+        'method' => 'sdoView'
     ];
 
     const SCHEDULE_VIEW = [
@@ -119,6 +128,11 @@ abstract class BaseVKCommand extends BaseCommand
         'method' => 'selectBroadcasting'
     ];
 
+    const PERSONAL_BROADCASTING_SELECT_LOCATION = [
+        'class' => PersonalAreaCommand::class,
+        'method' => 'selectLocationBroadcasting'
+    ];
+
     const MAIN_MENU_ROOM_VIEW = [
         'class' => MainMenuCommand::class,
         'method' => 'roomView'
@@ -127,6 +141,61 @@ abstract class BaseVKCommand extends BaseCommand
     const MAIN_MENU_ROOM_SELECT = [
         'class' => MainMenuCommand::class,
         'method' => 'selectRoom'
+    ];
+
+    const MAIN_MENU_TEACHERS_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'teachersView'
+    ];
+
+    const MAIN_MENU_TEACHERS_SELECT = [
+        'class' => MainMenuCommand::class,
+        'method' => 'selectTeachers'
+    ];
+
+    const MAIN_MENU_NEWS_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'newsView'
+    ];
+
+    const MAIN_MENU_PLAYER_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'playerView'
+    ];
+
+    const MAIN_MENU_DISTRIBUTION_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'distributionView'
+    ];
+
+    const MAIN_MENU_DISTRIBUTION_SELECT = [
+        'class' => MainMenuCommand::class,
+        'method' => 'selectDistribution'
+    ];
+
+    const MAIN_MENU_WISHES_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'wishesView'
+    ];
+
+    const MAIN_MENU_FEEDBACK_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'feedbackView'
+    ];
+
+    const MAIN_MENU_CHAT_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'chatView'
+    ];
+
+    const MAIN_MENU_CHAT_SELECT = [
+        'class' => MainMenuCommand::class,
+        'method' => 'selectChat'
+    ];
+
+    const MAIN_MENU_CHAT_MESSAGE = [
+        'class' => MainMenuCommand::class,
+        'method' => 'messageChat'
     ];
 
     public abstract function mainSelect();

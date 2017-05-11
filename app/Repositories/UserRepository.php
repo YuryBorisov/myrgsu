@@ -41,6 +41,14 @@ class UserRepository extends BaseRepository
         return $this->get($user['user_id'], $serviceId);
     }
 
+    public function addMessageForBroadcasting($userId, $serviceId, $message)
+    {
+        $user = $this->get($userId, $serviceId);
+        $user['broadcasting'] = $message;
+        $this->addById($userId.'_'.$serviceId, $user);
+        return $this->get($user['user_id'], $serviceId);
+    }
+
     public function getCommandEnd($userId, $serviceId)
     {
         $user = $this->get($userId, $serviceId);
