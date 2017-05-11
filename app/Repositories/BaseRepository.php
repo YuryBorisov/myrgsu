@@ -58,7 +58,7 @@ abstract class BaseRepository
         return Cache::tags([$this->cacheName, 'name']);
     }
 
-    protected function isById($id)
+    protected function isById($id, $serviceId = 0)
     {
         return $this->getCachedById()->has($id);
     }
@@ -84,9 +84,9 @@ abstract class BaseRepository
         $this->addByName($name, $data);
     }
 
-    public function get($id)
+    public function get($id, $serviceId = 0)
     {
-        return $this->getById($id);
+        return $this->getById($id, $serviceId);
     }
 
     public function clear($id, $name = null)
@@ -98,7 +98,7 @@ abstract class BaseRepository
         }
     }
 
-    public function getById($id)
+    public function getById($id, $serviceId = 0)
     {
         if(!$this->isById($id))
         {
