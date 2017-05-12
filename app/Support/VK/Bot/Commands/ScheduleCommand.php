@@ -179,7 +179,7 @@ class ScheduleCommand extends BaseVKCommand
         return $this->text;
     }
 
-    public function today()
+    public function today($menu = true)
     {
         if($this->user['faculty_id'] != 0)
         {
@@ -225,7 +225,11 @@ class ScheduleCommand extends BaseVKCommand
         {
             $this->text = "Вы не выбрали факультет.\n".self::SEPARATOR."\n";
         }
-        return $this->view(false);
+        if($menu)
+        {
+            return $this->view(false);
+        }
+        return $this->text;
     }
 
     public function tomorrowDay()

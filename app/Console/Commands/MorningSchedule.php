@@ -2,9 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Classes\VK\Commands\Commands;
-use App\Models\UserVK;
+use App\Models\Service;
+use App\Models\User;
+use App\Support\VK\Bot\Commands\PersonalAreaCommand;
+use App\Support\VK\Bot\Commands\ScheduleCommand;
+use App\Support\VK\Bot\Request;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MorningSchedule extends Command
 {
@@ -40,28 +45,20 @@ class MorningSchedule extends Command
     public function handle()
     {
         $i = 0;
-        foreach (UserVK::where(['call' => 0])->get() as $user)
+        foreach (DB::table('users')->where([['call', 0], ['service_id', Service::VK], ['group_id', '!=', 0]])->get() as $user)
         {
-            $text = false;
-            if($user->group_id != 0)
+            if($i == 3)
             {
-                $text = (new Commands($user, 12))->executeCommandNumber();
+                sleep(5);
+                $i = 0;
             }
-            if($text)
-            {
-                if($i == 3)
-                {
-                    sleep(5);
-                    $i = 0;
-                }
-                Commands::sendMessage([
-                    'message' => "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\n\n". $text,
-                    'user_id' => $user['id'],
-                    'access_token' => env('VK_BOT_KEY'),
-                    'v' => '5.0'
-                ]);
-                $i++;
-            }
+            $user = (array) $user;
+            $s = new ScheduleCommand($user, null, null);
+            Request::sendMessage([
+                'user_id' => $user['user_id'],
+                'message' => "Доброе утро {$user['first_name']}.\n\n".$s->today(false)
+            ]);
+            $i++;
         }
     }
 }
