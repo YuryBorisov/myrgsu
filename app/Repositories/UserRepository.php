@@ -19,6 +19,7 @@ class UserRepository extends BaseRepository
             if($user = User::where([['user_id', $userId], ['service_id', $serviceId]])->first())
             {
                 $user = $user->toArray();
+                $user[User::NOTIFICATIONS] = json_decode($user[User::NOTIFICATIONS], true);
                 $this->addById($userId.'_'.$serviceId, $user);
                 return $user;
             }
@@ -32,11 +33,12 @@ class UserRepository extends BaseRepository
         return $this->getCachedById()->has($userId.'_'.$serviceId);
     }
 
-    public function addCommand($userId, $serviceId, $command)
+    public function addCommand($userId, $serviceId, $command, $value = null)
     {
         $user = $this->get($userId, $serviceId);
         $user['commands'][] = $command;
         $user['commands']['end'] = $command;
+        $user['commands']['end']['value'] = $value;
         $this->addById($userId.'_'.$serviceId, $user);
         return $this->get($user['user_id'], $serviceId);
     }

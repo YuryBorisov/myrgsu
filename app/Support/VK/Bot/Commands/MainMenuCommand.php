@@ -31,7 +31,7 @@ class MainMenuCommand extends BaseVKCommand
         4 => self::MAIN_MENU_NEWS_VIEW,
         5 => self::MAIN_MENU_PLAYER_VIEW,
         6 => self::MAIN_MENU_CHAT_VIEW,
-        7 => self::MAIN_MENU_DISTRIBUTION_VIEW,
+        7 => self::MAIN_MENU_NOTIFICATIONS_VIEW,
         8 => self::MAIN_MENU_WISHES_VIEW,
         9 => self::MAIN_MENU_FEEDBACK_VIEW
     ];
@@ -39,7 +39,6 @@ class MainMenuCommand extends BaseVKCommand
     public function view($title = true)
     {
         $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_SELECT);
-        $distribution = $this->user['distribution'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
         if($title)
         {
             $this->text .= "\xF0\x9F\x8C\x80 Главное меню \n".self::SEPARATOR."\n";
@@ -50,7 +49,7 @@ class MainMenuCommand extends BaseVKCommand
                        "4. \xF0\x9F\x93\xB0 Новости РГСУ\n".
                        "5. \xF0\x9F\x8E\xA7 Плеер\n".
                        "6. \xF0\x9F\x92\xAC Чат\n".
-                       "7. \xF0\x9F\x93\xA2 Рассылка [{$distribution}]\n".
+                       "7. \xF0\x9F\x93\xA2 Уведомления\n".
                        "8. \xE2\x9A\xA1 Пожелания/Улучшения\n".
                        "9. \xF0\x9F\x8E\xA4 Feedback";
         return $this->text;
@@ -425,6 +424,71 @@ class MainMenuCommand extends BaseVKCommand
             'access_token' => env('VK_BOT_KEY'),
             'v' => '5.0'
         ]);
+        return $this->text;
+    }
+
+    public function notificationsView()
+    {
+        $schedule = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_SCHEDULE] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
+        $broadcasting = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_BROADCASTING] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
+        $newsProject = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
+        $this->text = "\xF0\x9F\x93\xA2 Уведомления\n\n".
+                      "1. \xF0\x9F\x93\xB0 Новости проекта [".$newsProject."]\n".
+                      "2. \xF0\x9F\x93\x85 Расписание [".$schedule."]\n".
+                      "3. \xF0\x9F\x8E\xBA Вещание [".$broadcasting."]\n\n".
+                      "Пришлите мне цифру для изменения статуса уведомлений.\nДля выхода в главное меню отправьте цифру 100.";
+        $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT);
+        return $this->text;
+    }
+
+    public function selectNotifications()
+    {
+        if(self::CANCELED != $this->message)
+        {
+            switch ($this->message)
+            {
+                case User::NOTIFICATIONS_NEWS_PROJECT_ID:
+                    $this->text = "\xF0\x9F\x93\xB0 Новости проекта\n\n";
+                    if($this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES)
+                    {
+                        $n1 = 'включена';
+                        $n2 = 'Выключить';
+                        $n3 = "\xE2\x9D\x8E";
+                    }
+                    else
+                    {
+                        $n1 = 'выключена';
+                        $n2 = 'Включить';
+                        $n3 = "\xE2\x9C\x85";
+                    }
+                    $this->text .= "\xF0\x9F\x93\xA2 Сейчас твоя рассылка на новости проекта ".$n1.".\n\n1. ".$n3." ".$n2."\n\nОтправьте цифру 1 если вы хотите ".mb_strtolower($n2)." рассылку.\nДля выхода отправьте цифру 100.";
+                    $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT_USER, User::NOTIFICATIONS_NEWS_PROJECT_ID);
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    $this->text = $this->notificationsView();
+            }
+        }
+        else
+        {
+            $this->text = $this->view();
+        }
+        return $this->text;
+    }
+
+    public function selectNotificationsUser()
+    {
+        if(self::CANCELED != $this->message)
+        {
+
+        }
+        else
+        {
+            $this->text = $this->notificationsView();
+        }
         return $this->text;
     }
 

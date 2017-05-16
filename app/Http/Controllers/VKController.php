@@ -8,6 +8,7 @@ use App\Repositories\UserRepository;
 use App\Support\VK\Bot\Commands\BaseVKCommand;
 use App\Support\VK\Bot\Manager;
 use App\Support\VK\Bot\Request;
+use Illuminate\Support\Facades\Log;
 
 class VKController extends Controller
 {
@@ -34,6 +35,7 @@ class VKController extends Controller
                     ]);
                     $user = $repository->addCommand($user['user_id'], Service::VK, BaseVKCommand::WELCOME_VIEW);
                 }
+                Log::info($user);
                 if(strlen($text = (new Manager($user, $data))->run()) > 0)
                 {
                     Request::sendMessage([

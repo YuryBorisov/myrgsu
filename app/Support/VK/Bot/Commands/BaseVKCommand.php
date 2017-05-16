@@ -198,6 +198,21 @@ abstract class BaseVKCommand extends BaseCommand
         'method' => 'messageChat'
     ];
 
+    const MAIN_MENU_NOTIFICATIONS_VIEW = [
+        'class' => MainMenuCommand::class,
+        'method' => 'notificationsView'
+    ];
+
+    const MAIN_MENU_NOTIFICATIONS_SELECT = [
+        'class' => MainMenuCommand::class,
+        'method' => 'selectNotifications'
+    ];
+
+    const MAIN_MENU_NOTIFICATIONS_SELECT_USER = [
+        'class' => MainMenuCommand::class,
+        'method' => 'selectNotificationsUser'
+    ];
+
     public abstract function mainSelect();
 
 }

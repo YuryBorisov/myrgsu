@@ -108,7 +108,7 @@ class PersonalAreaCommand extends BaseVKCommand
     {
         $this->text =  "\xF0\x9F\x8E\xBA Вещание - отправляйте сообщения от имени Бота своим сокурсникам.\n".
                        "Введите сообщение [Например: Привет всем кто с ФИТ \xE2\x9C\x8C ]\n".
-                       "Для отмены отправьте цифру 100.";
+                       "Для отмены отправьте цифру 100.\nВНИМАНИЕ: АДМИНИСТРАЦИЯ НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ТО, ЧТО ВЫ ХОТИТЕ ОТПРАВИТЬ. ЕЁ НЕСЕТЕ ТОЛЬКО ВЫ.";
         $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::PERSONAL_BROADCASTING_SELECT);
         return $this->text;
 

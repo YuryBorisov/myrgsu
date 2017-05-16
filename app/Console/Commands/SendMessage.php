@@ -6,6 +6,7 @@ use App\Classes\VK\Commands\Commands;
 use App\Models\User;
 use App\Models\UserVK;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class SendMessage extends Command
 {
@@ -40,9 +41,20 @@ class SendMessage extends Command
      */
     public function handle()
     {
+        foreach (User::all() as $user)
+        {
+            $arr = [
+                'schedule' => $user->call,
+                'broadcasting' => 0,
+                'news_project' => $user->distribution
+            ];
+            DB::table('users')->where('id', $user->id)->update(['notifications' => json_encode($arr)]);
+        }
+        /*
         $i = 0;
         foreach (User::whereDistribution(0)->get() as $user)
         {
+
             if($i == 3)
             {
                 sleep(5);
@@ -57,6 +69,7 @@ class SendMessage extends Command
             echo $user->user_id."\n";
             $i++;
         }
+        */
     }
 
 }

@@ -25,7 +25,7 @@ class ParseController extends Controller
 
         set_time_limit(10000);
 
-        $url = 'http://rgsu.net/for-students/timetable/timetable.html?template=&action=index&admin_mode=&f_Faculty=16&group=';
+        $url = 'http://rgsu.net/for-students/timetable/timetable.html?template=&action=index&admin_mode=&f_Faculty=19&group=';
 
         $html = new \Yangqi\Htmldom\Htmldom($url);
 
@@ -42,7 +42,7 @@ class ParseController extends Controller
             $nameGroup = ($groupRepository = GroupRepository::instance()->getByName($nameGroup)) ?
                 $groupRepository['id'] : Group::create([
                     'short_name' => $nameGroup,
-                    'faculty_id' => 14
+                    'faculty_id' => 13
                 ])->id;
             foreach ($html->find("div[class=small-12 large-6 columns]") as $h)
             {
