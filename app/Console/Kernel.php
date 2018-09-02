@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\EveningSchedule;
 use App\Console\Commands\MorningSchedule;
+use App\Console\Commands\Parse;
 use App\Console\Commands\SendMessage;
 use App\Models\UserVK;
 use Illuminate\Console\Scheduling\Schedule;
@@ -20,7 +21,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         EveningSchedule::class,
         SendMessage::class,
-        MorningSchedule::class
+        MorningSchedule::class,
+        Parse::class
     ];
 
     /**

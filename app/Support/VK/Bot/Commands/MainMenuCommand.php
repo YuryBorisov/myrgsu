@@ -113,10 +113,13 @@ class MainMenuCommand extends BaseVKCommand
                     $weekId = WeekRepository::instance()->active()['id'];
                     $subject = Subject::whereIn('address_id', $ids)->whereWeekId($weekId)->whereDayId(Carbon::now()->dayOfWeek)->get();
                     $this->text .= "Сегодня: ".date('d-m-Y')."\nАудитория: ".$this->message."\n\n";
-                    for($i = 1; $i <= 10; $i++)
-                    {
-                        $this->text .= $this->searchRoomSubject($subject, $i);
-                    }
+                    if ($subject->count() > 0)
+                        for($i = 1; $i <= 10; $i++)
+                        {
+                            $this->text .= $this->searchRoomSubject($subject, $i);
+                        }
+                    else
+                        $this->text .= "В этой аудитории сегодня не проводятся занятия\n*******************\n";
                     $this->view(false);
                 }
                 else
@@ -235,9 +238,9 @@ class MainMenuCommand extends BaseVKCommand
         if(isset($response['response']))
         {
             $response = $response['response'];
-            unset($response['comments'][0]);
+            unset($response['items'][0]);
             $audios = [];
-            foreach ($response['comments'] as $comment)
+            foreach ($response['items'] as $comment)
             {
                 if(isset($comment['attachments']))
                 {
@@ -260,8 +263,8 @@ class MainMenuCommand extends BaseVKCommand
                 'user_id' => $this->user['user_id'],
                 'message' => "Добавил(a): {$userAudio['first_name']} {$userAudio['last_name']} [https://vk.com/id{$audio['user_id']}]\n",
                 'access_token' => env('VK_BOT_KEY'),
-                'attachment' => 'audio'.$audio['audio']['owner_id'].'_'.$audio['audio']['aid'],
-                'v' => '5.0'
+                'attachment' => 'audio'.$audio['audio']['owner_id'],
+                'v' => '5.84'
             ];
             Request::sendAttachment($arr);
             $this->text = "Добавь свою музыку \xF0\x9F\x8E\xA7\nhttps://vk.com/topic-144482898_35459441\nОтправь цифру 5, чтобы получить ещё песню.\n".self::SEPARATOR."\n".$this->view(false);
@@ -326,7 +329,8 @@ class MainMenuCommand extends BaseVKCommand
 
     public function chatView()
     {
-        $this->text = "\xF0\x9F\x92\xAC Чат.\n\nСписок комнат:\n";
+        /*
+         * $this->text = "\xF0\x9F\x92\xAC Чат.\n\nСписок комнат:\n";
         foreach (ChatRoomRepository::instance()->getAll() as $room)
         {
             $count = ChatRoomUser::whereRoomId($room['id'])->count();
@@ -343,9 +347,23 @@ class MainMenuCommand extends BaseVKCommand
             }
             $this->text .= "{$room['id']}. {$room['name']} [{$count} {$text}]\n";
         }
-        $this->text .= "Список чатов в Telegram: https://vk.com/rgsu_bot?w=wall-144482898_8\n".
-                       self::SEPARATOR."\nПришли номер комнаты или отправь цифру 100 для выхода в главное меню.";;
-        $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_CHAT_SELECT);
+         */
+        $this->text = "\xF0\x9F\x92\xAC Чат\n";
+        $this->text .= "Список чатов в Telegram: https://vk.com/rgsu_bot?w=wall-144482898_8\n" . self::SEPARATOR . "\n";
+
+        $this->text .= "\xF0\x9F\x8C\x80 Главное меню \n".self::SEPARATOR."\n".
+            "1. \xF0\x9F\x8E\x92 Личный кабинет\n".
+            "2. \xF0\x9F\x9A\xAA Аудитории\n".
+            "3. \xF0\x9F\x91\x94 Преподаватели\n".
+            "4. \xF0\x9F\x93\xB0 Новости РГСУ\n".
+            "5. \xF0\x9F\x8E\xA7 Плеер\n".
+            "6. \xF0\x9F\x92\xAC Чат\n".
+            "7. \xF0\x9F\x93\xA2 Уведомления\n".
+            "8. \xE2\x9A\xA1 Пожелания/Улучшения\n".
+            "9. \xF0\x9F\x8E\xA4 Feedback";
+
+                       //self::SEPARATOR."\nПришли номер комнаты или отправь цифру 100 для выхода в главное меню.";;
+        $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_VIEW);
         return $this->text;
     }
 
@@ -433,9 +451,9 @@ class MainMenuCommand extends BaseVKCommand
         $broadcasting = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_BROADCASTING] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
         $newsProject = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
         $this->text = "\xF0\x9F\x93\xA2 Уведомления\n\n".
-                      "1. \xF0\x9F\x93\xB0 Новости проекта [".$newsProject."]\n".
-                      "2. \xF0\x9F\x93\x85 Расписание [".$schedule."]\n".
-                      "3. \xF0\x9F\x8E\xBA Вещание [".$broadcasting."]\n\n".
+                      "1. \xF0\x9F\x93\xB0 Новости проекта [".$newsProject."]\n\n" .
+                      //"2. \xF0\x9F\x93\x85 Расписание [".$schedule."]\n".
+                      //"3. \xF0\x9F\x8E\xBA Вещание [".$broadcasting."]\n\n".
                       "Пришлите мне цифру для изменения статуса уведомлений.\nДля выхода в главное меню отправьте цифру 100.";
         $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT);
         return $this->text;
@@ -464,12 +482,8 @@ class MainMenuCommand extends BaseVKCommand
                     $this->text .= "\xF0\x9F\x93\xA2 Сейчас твоя рассылка на новости проекта ".$n1.".\n\n1. ".$n3." ".$n2."\n\nОтправьте цифру 1 если вы хотите ".mb_strtolower($n2)." рассылку.\nДля выхода отправьте цифру 100.";
                     $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT_USER, User::NOTIFICATIONS_NEWS_PROJECT_ID);
                     break;
-                case 2:
-                    break;
-                case 3:
-                    break;
                 default:
-                    $this->text = $this->notificationsView();
+                    $this->text = "Нет такой команды [Пришли мне цифру]\n*******************\n" . $this->notificationsView();
             }
         }
         else
@@ -483,7 +497,33 @@ class MainMenuCommand extends BaseVKCommand
     {
         if(self::CANCELED != $this->message)
         {
-
+            if ($this->message == 1) {
+                $newsProject = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES ? User::NOTIFICATIONS_NO : User::NOTIFICATIONS_YES;
+                User::where('id', $this->user['id'])->update(['notifications' => json_encode(['schedule' => 0, 'news_project' => $newsProject, 'broadcasting' => 0])]);
+                UserRepository::instance()->editNotifications($this->user['user_id'], Service::VK);
+                $this->user['notifications']['news_project'] = $newsProject;
+                if($this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES)
+                    $n1 = 'включили';
+                else
+                    $n1 = 'выключили';
+                $this->text = "Вы успешно " . $n1 . " рассылку на \xF0\x9F\x93\xB0 Новости проекта\n\n" . $this->view();
+            } else {
+                $this->text = "Нет такой команды [Пришли мне цифру]\n*******************\n\xF0\x9F\x93\xB0 Новости проекта\n\n";
+                if($this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES)
+                {
+                    $n1 = 'включена';
+                    $n2 = 'Выключить';
+                    $n3 = "\xE2\x9D\x8E";
+                }
+                else
+                {
+                    $n1 = 'выключена';
+                    $n2 = 'Включить';
+                    $n3 = "\xE2\x9C\x85";
+                }
+                $this->text .= "\xF0\x9F\x93\xA2 Сейчас твоя рассылка на новости проекта ".$n1.".\n\n1. ".$n3." ".$n2."\n\nОтправьте цифру 1 если вы хотите ".mb_strtolower($n2)." рассылку.\nДля выхода отправьте цифру 100.";
+                $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT_USER, User::NOTIFICATIONS_NEWS_PROJECT_ID);
+            }
         }
         else
         {

@@ -106,10 +106,12 @@ class PersonalAreaCommand extends BaseVKCommand
 
     public function broadcastingView()
     {
-        $this->text =  "\xF0\x9F\x8E\xBA Вещание - отправляйте сообщения от имени Бота своим сокурсникам.\n".
-                       "Введите сообщение [Например: Привет всем кто с ФИТ \xE2\x9C\x8C ]\n".
-                       "Для отмены отправьте цифру 100.\nВНИМАНИЕ: АДМИНИСТРАЦИЯ НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ТО, ЧТО ВЫ ХОТИТЕ ОТПРАВИТЬ. ЕЁ НЕСЕТЕ ТОЛЬКО ВЫ.";
-        $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::PERSONAL_BROADCASTING_SELECT);
+        //$this->text =  "\xF0\x9F\x8E\xBA Вещание - отправляйте сообщения от имени Бота своим сокурсникам.\n".
+        //    "Введите сообщение [Например: Привет всем кто с ФИТ \xE2\x9C\x8C ]\n".
+        //    "Для отмены отправьте цифру 100.\nВНИМАНИЕ: АДМИНИСТРАЦИЯ НЕ НЕСЕТ ОТВЕТСТВЕННОСТИ ЗА ТО, ЧТО ВЫ ХОТИТЕ ОТПРАВИТЬ. ЕЁ НЕСЕТЕ ТОЛЬКО ВЫ.";
+        $this->text =  "\xF0\x9F\x8E\xBA Вещание - отправляйте сообщения от имени Бота своим сокурсникам. [Эта функция была отключена за ненадобностью]\n\n" . $this->view();
+
+        //$this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::PERSONAL_BROADCASTING_SELECT);
         return $this->text;
 
     }
@@ -197,7 +199,7 @@ class PersonalAreaCommand extends BaseVKCommand
 
     public function sdoView()
     {
-        return "В данный момент пока не работает =]\n".self::SEPARATOR."\n".$this->view(false);
+        return "\xF0\x9F\x8C\x81 СДО [Эта функция была отключена за ненадобностью. Используйте веб версию https://sdo.rgsu.net]\n\nПо вопросам, связанным с организацией обучения, необходимо обращаться к специалистам Централизованного деканата или кураторам от факультетов: https://sdo.rgsu.net/htmlpage/index/view/htmlpage_id/33/?&page_id=m9601\nПо вопросам электронной библиотеки - nb@rgsu.net\nОтдел кадров по работе со студентами: http://rgsu.net/for-students/navigator/podrazdeleniya-kotorye-vam-prigodyatsya/upravlenie-kadrov-po-rabote-so-studentami\nБухгалтерия: http://rgsu.net/for-students/navigator/podrazdeleniya-kotorye-vam-prigodyatsya/buhgalteriya\n" .self::SEPARATOR."\n".$this->view(false);
     }
 
 }

@@ -28,6 +28,12 @@ class UserRepository extends BaseRepository
         return $this->getCachedById()->get($userId.'_'.$serviceId);
     }
 
+    public function editNotifications($userId, $serviceId = 0) {
+        $user = $this->get($userId, $serviceId);
+        $user[User::NOTIFICATIONS] = json_decode(User::where([['user_id', $userId], ['service_id', $serviceId]])->first()->notifications, true);
+        $this->addById($userId.'_'.$serviceId, $user);
+    }
+
     protected function isById($userId, $serviceId = 0)
     {
         return $this->getCachedById()->has($userId.'_'.$serviceId);

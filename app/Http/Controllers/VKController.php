@@ -16,6 +16,7 @@ class VKController extends Controller
     public function index()
     {
         $data = json_decode($c = file_get_contents('php://input'), true);
+
         switch ($data['type']) {
             case 'confirmation':
                 return env('VK_BOT_CONFIRMATION');
@@ -24,7 +25,9 @@ class VKController extends Controller
                 if(!$user = ($repository = UserRepository::instance())->get($data['object']['user_id'], Service::VK))
                 {
                     $user = json_decode(Request::getUser([
-                        'user_ids' => $data['object']['user_id']
+                        'user_ids' => $data['object']['user_id'],
+                        'access_token' => env('VK_BOT_KEY'),
+                        'v' => 8.84
                     ]), true);
                     $user = User::create([
                         'service_id' => Service::VK,
@@ -35,7 +38,6 @@ class VKController extends Controller
                     ]);
                     $user = $repository->addCommand($user['user_id'], Service::VK, BaseVKCommand::WELCOME_VIEW);
                 }
-                Log::info($user);
                 if(strlen($text = (new Manager($user, $data))->run()) > 0)
                 {
                     Request::sendMessage([
@@ -46,6 +48,7 @@ class VKController extends Controller
                 echo("ok");
                 break;
         }
+
     }
 
 }

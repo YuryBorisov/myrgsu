@@ -3,6 +3,7 @@
 namespace App\Support\VK\Bot;
 
 use App\Support\Base\BaseRequest;
+use Illuminate\Support\Facades\Log;
 
 class Request extends BaseRequest
 {
@@ -10,7 +11,7 @@ class Request extends BaseRequest
     public static function sendMessage($params)
     {
         $params['access_token'] = env('VK_BOT_KEY');
-        $params['v'] = '5.0';
+        $params['v'] = '5.84';
         return self::curl('https://api.vk.com/method/messages.send', $params);
     }
 
@@ -21,7 +22,8 @@ class Request extends BaseRequest
             'group_id' => 144482898,
             'topic_id' => 35459441,
             'extended' => true,
-            'count' => 100
+            'count' => 100,
+            'v' => '5.84'
         ]);
     }
 

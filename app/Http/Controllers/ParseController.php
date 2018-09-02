@@ -23,7 +23,7 @@ class ParseController extends Controller
 
         ini_set('memory_limit', '-1');
 
-        set_time_limit(10000);
+        set_time_limit(100000);
 
         $url = 'http://rgsu.net/for-students/timetable/timetable.html?template=&action=index&admin_mode=&f_Faculty=19&group=';
 
@@ -92,6 +92,13 @@ class ParseController extends Controller
                                                 ? $addressRepository['id']
                                                 :
                                                 Address::create(['name' => $adr])->id;
+                                        /*
+                                         $subject[$nameGroup][$w][$dayId][$i]['address_id'] =
+                                            ($addressRepository = AddressRepository::instance()->getWhereName($adr))
+                                                ? $addressRepository['id']
+                                                :
+                                                Address::create(['name' => $adr])->id;
+                                         */
                                         break;
                                     case 2:
                                         $subject[$nameGroup][$w][$dayId][$i]['subject'] = $tds[$i2]->innertext;
