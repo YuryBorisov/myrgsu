@@ -48,7 +48,7 @@ class MainMenuCommand extends BaseVKCommand
                        "3. \xF0\x9F\x91\x94 Преподаватели\n".
                        "4. \xF0\x9F\x93\xB0 Новости РГСУ\n".
                        "5. \xF0\x9F\x8E\xA7 Плеер\n".
-                       "6. \xF0\x9F\x92\xAC Чат\n".
+                       "6. \xF0\x9F\x92\xAC Чаты\n".
                        "7. \xF0\x9F\x93\xA2 Уведомления\n".
                        "8. \xE2\x9A\xA1 Пожелания/Улучшения\n".
                        "9. \xF0\x9F\x8E\xA4 Feedback";
@@ -323,7 +323,7 @@ class MainMenuCommand extends BaseVKCommand
 
     public function feedbackView()
     {
-        $this->text = "Не можешь разобраться? \xF0\x9F\x98\x89\nПиши https://vk.com/id333114129\n".self::SEPARATOR."\n".$this->view(false);
+        $this->text = "Не можешь разобраться? \xF0\x9F\x98\x89\nVK https://vk.com/id333114129\nTelegram https://t.me/yu2ry\n" . self::SEPARATOR . "\n".$this->view(false);
         return $this->text;
     }
 
@@ -348,23 +348,19 @@ class MainMenuCommand extends BaseVKCommand
             $this->text .= "{$room['id']}. {$room['name']} [{$count} {$text}]\n";
         }
          */
-        $this->text = "\xF0\x9F\x92\xAC Чат\n";
-        $this->text .= "Список чатов в Telegram: https://vk.com/rgsu_bot?w=wall-144482898_8\n" . self::SEPARATOR . "\n";
 
-        $this->text .= "\xF0\x9F\x8C\x80 Главное меню \n".self::SEPARATOR."\n".
-            "1. \xF0\x9F\x8E\x92 Личный кабинет\n".
-            "2. \xF0\x9F\x9A\xAA Аудитории\n".
-            "3. \xF0\x9F\x91\x94 Преподаватели\n".
-            "4. \xF0\x9F\x93\xB0 Новости РГСУ\n".
-            "5. \xF0\x9F\x8E\xA7 Плеер\n".
-            "6. \xF0\x9F\x92\xAC Чат\n".
-            "7. \xF0\x9F\x93\xA2 Уведомления\n".
-            "8. \xE2\x9A\xA1 Пожелания/Улучшения\n".
-            "9. \xF0\x9F\x8E\xA4 Feedback";
+        $arr = [
+            'user_id' => $this->user['user_id'],
+            'message' => "\xF0\x9F\x92\xAC Чаты\n" . "Список чатов в Telegram: https://vk.com/rgsu_bot?w=wall-144482898_8",
+            'access_token' => env('VK_BOT_KEY'),
+            'v' => '5.84'
+        ];
+        Request::sendMessage($arr);
 
                        //self::SEPARATOR."\nПришли номер комнаты или отправь цифру 100 для выхода в главное меню.";;
         $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_VIEW);
-        return $this->text;
+        //$this->text = $this->view();
+        return $this->view();
     }
 
     public function selectChat()
