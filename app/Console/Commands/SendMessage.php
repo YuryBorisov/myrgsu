@@ -39,9 +39,8 @@ class SendMessage extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $i = 0;
-        //User::all()
         $sleep = 4;
-        foreach (User::where('user_id', '=', 333114129)->get() as $user)
+        foreach (User::all() as $user)
         {
             if($i == 4)
             {
@@ -52,7 +51,7 @@ class SendMessage extends Command
                 $i = 0;
             }
             Commands::sendMessage([
-                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nС началом учебного года \xF0\x9F\x8E\x93 \xF0\x9F\x8E\x89\nДумаю, что ты меня ещё не забыл \xF0\x9F\x92\xAC\nВыбирай свою группу и получай расписание в считанные секунды \xF0\x9F\x9A\x80\nРассказывай обо мне своим одногруппникам и всем друзьям из университету \xF0\x9F\x93\xA2\nУдачи в этом учебном году \xF0\x9F\x98\x89 \xF0\x9F\x98\x89",
+                'message' => "Привет {$user->first_name} \xE2\x9C\x8C\nС началом учебного года \xF0\x9F\x8E\x93 \xF0\x9F\x8E\x89\nДумаю, что ты меня ещё не забыл \xF0\x9F\x92\xAC\nВыбирай свою группу и получай расписание в считанные секунды \xF0\x9F\x9A\x80\nРассказывай обо мне своим одногруппникам и всем друзьям из университета \xF0\x9F\x93\xA2\nУдачи в этом учебном году \xF0\x9F\x98\x89 \xF0\x9F\x98\x89",
                 'user_id' => $user['user_id'],
                 'access_token' => env('VK_BOT_KEY'),
                 'v' => '5.84'
