@@ -47,9 +47,9 @@ class MorningSchedule extends Command
         $i = 0;
         foreach (DB::table('users')->where([['call', 0], ['service_id', Service::VK], ['group_id', '!=', 0]])->get() as $user)
         {
-            if($i == 3)
+            if($i == 4)
             {
-                sleep(5);
+                sleep(4);
                 $i = 0;
             }
             $user = (array) $user;

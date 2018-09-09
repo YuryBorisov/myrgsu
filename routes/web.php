@@ -23,7 +23,7 @@ Route::group(['prefix' => 'telegram'], function (){
         Route::get('unset', ['as' => 'telegram.hook.unset', 'uses' => 'TelegramController@unsetWebhook']);
     });
 });
-Route::any('vktest', ['as' => 'vk.index', 'uses' => 'VKController@index']);
+//Route::any('vktest', ['as' => 'vk.index', 'uses' => 'VKController@index']);
 Route::any('vk', ['as' => 'vk.index', 'uses' => 'VKController@index']);
 
 //Route::get('/parse', ['as' => 'parse', 'uses' => 'ParseController@parse']);

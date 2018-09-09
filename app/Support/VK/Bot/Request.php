@@ -3,7 +3,6 @@
 namespace App\Support\VK\Bot;
 
 use App\Support\Base\BaseRequest;
-use Illuminate\Support\Facades\Log;
 
 class Request extends BaseRequest
 {

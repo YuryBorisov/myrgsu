@@ -9,6 +9,7 @@ use App\Repositories\GroupRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\WeekRepository;
 use App\Support\VK\Bot\Manager;
+use App\Support\VK\Bot\Request;
 use Carbon\Carbon;
 
 class ScheduleCommand extends BaseVKCommand
@@ -341,6 +342,15 @@ class ScheduleCommand extends BaseVKCommand
         else
         {
             $this->text = "Вы не выбрали факультет.\n".self::SEPARATOR."\n";
+        }
+        if (($len = mb_strlen($this->text)) > 4040) {
+            $text1 = mb_substr($this->text, 0, 4040);
+            Request::sendMessage([
+                'user_id' => $this->user['user_id'],
+                'message' => $text1
+            ]);
+            echo("ok");
+            $this->text = mb_substr($this->text, 4040);
         }
         return $this->view(false);
     }
