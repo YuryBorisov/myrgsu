@@ -3,10 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Classes\VK\Commands\Commands;
+use App\Models\User;
 use App\Models\UserVK;
 use App\Repositories\GroupRepository;
+use App\Support\VK\Bot\Request;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class EveningSchedule extends Command
 {
@@ -34,12 +39,7 @@ class EveningSchedule extends Command
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
         $i = 0;
         $dayOfWeek = Carbon::now()->dayOfWeek;
@@ -51,35 +51,30 @@ class EveningSchedule extends Command
         {
             $dayOfWeek++;
         }
-        foreach (UserVK::where(['call' => 0])->get() as $user)
+        foreach (User::where(['call' => 0])->get() as $user)
         {
-            $text = false;
-            if($user->call == 0)
-            {
-                if($user->group_id != 0)
-                {
-                    if(count(GroupRepository::instance()->getActiveSubjectDay($user->group_id, $dayOfWeek)) >= 1) {
-                        $text = (new Commands($user, 13))->executeCommandNumber();
-                    } else {
-                        $text = "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\n\nЗавтра у тебя нет пар \xF0\x9F\x98\xB1\nРазвлекайся \xF0\x9F\x8E\x89 \xF0\x9F\x8E\x89 \xF0\x9F\x8E\x89";
-                    }
+            if ($user->group_id == 0) {
+                $text = "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\nВыбери свою группу, чтобы я присылал тебе каждый день уведомления о завтрашних занятиях";
+            } else {
+                if(count(GroupRepository::instance()->getActiveSubjectDay($user->group_id, $dayOfWeek)) >= 1) {
+                    $text = (new Commands($user, 13))->executeCommandNumber();
+                    $text = "[Уведомление]\n" . $text;
+                } else {
+                    $text = "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\n\nЗавтра у тебя нет пар \xF0\x9F\x98\xB1";
                 }
             }
-            if($text)
+
+            Request::sendMessage([
+                'message' => $text,
+                'user_id' => $user->user_id,
+            ]);
+            $output->writeln(['<info>Отправили: ' . $user->first_name . ' ' . $user->last_name . '</info>']);
+            if($i == 8)
             {
-                if($i == 5)
-                {
-                    sleep(5);
-                    $i = 0;
-                }
-                Commands::sendMessage([
-                    'message' => $text,
-                    'user_id' => $user->id,
-                    'access_token' => env('VK_BOT_KEY'),
-                    'v' => '5.0'
-                ]);
-                $i++;
+                sleep(4);
+                $i = 0;
             }
+            $i++;
         }
     }
 }
