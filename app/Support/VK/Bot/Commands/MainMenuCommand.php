@@ -220,7 +220,8 @@ class MainMenuCommand extends BaseVKCommand
 
     public function newsView()
     {
-        $news = News::orderBy('created_at', 'desk')->limit(3)->get();
+        /*
+         * $news = News::orderBy('created_at', 'desk')->limit(3)->get();
         $this->text = "\xF0\x9F\x93\xB0 Последние новости.\n\n";
         foreach ($news as $n)
         {
@@ -231,6 +232,8 @@ class MainMenuCommand extends BaseVKCommand
             $this->text .= "\xF0\x9F\x93\xA2 Источник: ".$n->link."\n\n";
         }
         $this->view(false);
+         */
+        $this->text =  "\xF0\x9F\x93\xB0 Информационная лента находится по адресу: http://rgsu.net/press-centre/news\n" . self::SEPARATOR . "\n" . $this->view(false);
         return $this->text;
     }
 
