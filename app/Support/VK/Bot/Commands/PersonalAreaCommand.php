@@ -23,6 +23,7 @@ class PersonalAreaCommand extends BaseVKCommand
 
     public function view($title = true)
     {
+        /*
         if($this->user['location_id'] == 0)
         {
             $location = 'Не выбрано';
@@ -41,6 +42,9 @@ class PersonalAreaCommand extends BaseVKCommand
                       "3. \xF0\x9F\x8C\x8F Проживаю: {$location}\n".
                       "4. \xF0\x9F\x8E\xBA Вещание\n".
                       "0. \xF0\x9F\x8C\x80 Главное меню\n";
+         */
+        $this->text = (new MainMenuCommand($this->user, $this->message, $this->data))->view($title);
+
         return $this->text;
     }
 

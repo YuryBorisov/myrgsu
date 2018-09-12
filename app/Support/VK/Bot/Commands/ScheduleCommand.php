@@ -23,7 +23,6 @@ class ScheduleCommand extends BaseVKCommand
         self::SCHEDULE_TODAY,
         self::SCHEDULE_TOMORROW_DAY,
         self::SCHEDULE_WEEK,
-        self::SCHEDULE_CALL_VIEW,
         self::CANCELED => self::SCHEDULE_VIEW,
         1000 => self::SCHEDULE_VIEW
     ];
@@ -46,12 +45,10 @@ class ScheduleCommand extends BaseVKCommand
                 {
                     if($group['id'] == $this->user['group_id'])
                     {
-                        $callText = $this->user['call'] == 0 ? 'ВКЛ' : 'ВЫКЛ';
                         $this->text .= "{$group['short_name']}\n".
                                        "4. \xF0\x9F\x93\x84 Сегодняшние занятия\n".
                                        "5. \xE2\x8F\xA9 Завтрашние занятия\n".
-                                       "6. \xF0\x9F\x93\x91 Показать за неделю\n".
-                                       "7. \xF0\x9F\x94\x8A Уведомления [{$callText}]\n";
+                                       "6. \xF0\x9F\x93\x91 Показать за неделю\n";
                         break;
                     }
                 }
