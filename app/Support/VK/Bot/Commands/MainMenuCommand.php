@@ -25,7 +25,8 @@ class MainMenuCommand extends BaseVKCommand
 {
 
     protected $commands = [
-        1 => self::PERSONAL_AREA_VIEW,
+        //1 => self::PERSONAL_AREA_VIEW,
+        1 => self::SCHEDULE_VIEW,
         2 => self::MAIN_MENU_ROOM_VIEW,
         3 => self::MAIN_MENU_TEACHERS_VIEW,
         4 => self::MAIN_MENU_NEWS_VIEW,
@@ -43,7 +44,8 @@ class MainMenuCommand extends BaseVKCommand
         {
             $this->text .= "\xF0\x9F\x8C\x80 Главное меню \n".self::SEPARATOR."\n";
         }
-        $this->text .= "1. \xF0\x9F\x8E\x92 Личный кабинет\n".
+        $this->text .= //"1. \xF0\x9F\x8E\x92 Личный кабинет\n".
+                       "1. \xF0\x9F\x93\x85 Моё расписание\n".
                        "2. \xF0\x9F\x9A\xAA Аудитории\n".
                        "3. \xF0\x9F\x91\x94 Преподаватели\n".
                        "4. \xF0\x9F\x93\xB0 Новости РГСУ\n".
@@ -71,8 +73,8 @@ class MainMenuCommand extends BaseVKCommand
 
     public function roomView()
     {
-        $this->text = "Пришли мне аудиторию [Например: ВП8-408] и я скажу тебе есть ли в ней кто - нибудь сегодня.\n".
-            "Для отмены выбора отправьте цифру 100.";
+        $this->text = "Пришли мне аудиторию [Например: ВП8-408] и я скажу тебе есть ли в ней кто - нибудь сегодня\n".
+            "Для отмены выбора отправьте цифру 100";
         $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_ROOM_SELECT);
         return $this->text;
     }
@@ -257,13 +259,13 @@ class MainMenuCommand extends BaseVKCommand
             $audio = $audios[rand(0, count($audios) - 1)];
             if(!$userAudio = UserRepository::instance()->get($audio['user_id'], Service::VK))
             {
-                $userAudio = json_decode($t = file_get_contents("https://api.vk.com/method/users.get?user_ids={$audio['user_id']}&v=5.0"), true)['response'][0];
+                $userAudio = json_decode($t = file_get_contents("https://api.vk.com/method/users.get?user_ids={$audio['user_id']}&v=5.84"), true)['response'][0];
             }
             $arr = [
                 'user_id' => $this->user['user_id'],
                 'message' => "Добавил(a): {$userAudio['first_name']} {$userAudio['last_name']} [https://vk.com/id{$audio['user_id']}]\n",
                 'access_token' => env('VK_BOT_KEY'),
-                'attachment' => 'audio'.$audio['audio']['owner_id'],
+                'attachment' => 'audio'.$audio['audio']['owner_id'].'_'.$audio['audio']['id'],
                 'v' => '5.84'
             ];
             Request::sendAttachment($arr);

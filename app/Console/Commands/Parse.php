@@ -41,7 +41,7 @@ class Parse extends Command
 
         //var_dump($c);
 
-        Group::truncate();
+        //Group::truncate();
         Subject::truncate();
         Teacher::truncate();
         Address::truncate();
