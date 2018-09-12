@@ -34,6 +34,12 @@ class UserRepository extends BaseRepository
         $this->addById($userId.'_'.$serviceId, $user);
     }
 
+    public function editCall($userId, $serviceId = 0) {
+        $user = $this->get($userId, $serviceId);
+        $user['call'] = User::where([['user_id', $userId], ['service_id', $serviceId]])->first()->call;
+        $this->addById($userId.'_'.$serviceId, $user);
+    }
+
     protected function isById($userId, $serviceId = 0)
     {
         return $this->getCachedById()->has($userId.'_'.$serviceId);

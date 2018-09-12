@@ -43,6 +43,7 @@ class EveningSchedule extends Command
     {
         $i = 0;
         $dayOfWeek = Carbon::now()->dayOfWeek;
+        $count = 0;
         if($dayOfWeek == 6)
         {
             $dayOfWeek = 0;
@@ -54,7 +55,7 @@ class EveningSchedule extends Command
         foreach (User::where(['call' => 0])->get() as $user)
         {
             if ($user->group_id == 0) {
-                $text = "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\nВыбери свою группу, чтобы я присылал тебе каждый день уведомления о завтрашних занятиях";
+                $text = "Привет {$user->first_name} \xE2\x9C\x8C [Уведомление]\nВыбери свою группу, чтобы я присылал тебе каждый день уведомления о завтрашних занятиях\n\nЕсли ты не хочешь получать данное уведомление просто отключи его в разделе \"7. \xF0\x9F\x93\xA2 Уведомления\"";
             } else {
                 if(count(GroupRepository::instance()->getActiveSubjectDay($user->group_id, $dayOfWeek)) >= 1) {
                     $text = (new Commands($user, 13))->executeCommandNumber();
@@ -75,6 +76,10 @@ class EveningSchedule extends Command
                 $i = 0;
             }
             $i++;
+            $count++;
         }
+        $output->writeln([
+           '<info>Всего отправили ' . $count . ' пользователям</info>'
+        ]);
     }
 }

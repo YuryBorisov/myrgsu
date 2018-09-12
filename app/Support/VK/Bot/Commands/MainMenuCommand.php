@@ -448,14 +448,11 @@ class MainMenuCommand extends BaseVKCommand
 
     public function notificationsView()
     {
-        $schedule = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_SCHEDULE] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
-        $broadcasting = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_BROADCASTING] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
-        $newsProject = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES ? 'ВКЛ' : 'ВЫКЛ';
         $this->text = "\xF0\x9F\x93\xA2 Уведомления\n\n".
-                      "1. \xF0\x9F\x93\xB0 Новости проекта [".$newsProject."]\n\n" .
+                      "1. \xF0\x9F\x93\x85 Расписание [".($this->user['call'] == 0 ? "ВКЛ" : "ВЫКЛ")."]\n\n" .
                       //"2. \xF0\x9F\x93\x85 Расписание [".$schedule."]\n".
                       //"3. \xF0\x9F\x8E\xBA Вещание [".$broadcasting."]\n\n".
-                      "Пришлите мне цифру для изменения статуса уведомлений.\nДля выхода в главное меню отправьте цифру 100.";
+                      "Пришлите мне цифру для изменения статуса уведомлений\nДля выхода в главное меню отправьте цифру 100";
         $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT);
         return $this->text;
     }
@@ -467,8 +464,8 @@ class MainMenuCommand extends BaseVKCommand
             switch ($this->message)
             {
                 case User::NOTIFICATIONS_NEWS_PROJECT_ID:
-                    $this->text = "\xF0\x9F\x93\xB0 Новости проекта\n\n";
-                    if($this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES)
+                    $this->text = "\xF0\x9F\x93\x85 Расписание\n\n";
+                    if($this->user['call'] == 0)
                     {
                         $n1 = 'включена';
                         $n2 = 'Выключить';
@@ -480,7 +477,7 @@ class MainMenuCommand extends BaseVKCommand
                         $n2 = 'Включить';
                         $n3 = "\xE2\x9C\x85";
                     }
-                    $this->text .= "\xF0\x9F\x93\xA2 Сейчас твоя рассылка на новости проекта ".$n1.".\n\n1. ".$n3." ".$n2."\n\nОтправьте цифру 1 если вы хотите ".mb_strtolower($n2)." рассылку.\nДля выхода отправьте цифру 100.";
+                    $this->text .= "\xF0\x9F\x93\xA2 Сейчас твоя рассылка ".$n1.".\n\n1. ".$n3." ".$n2."\n\nОтправьте цифру 1 если вы хотите ".mb_strtolower($n2)." рассылку.\nДля выхода отправьте цифру 100.";
                     $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT_USER, User::NOTIFICATIONS_NEWS_PROJECT_ID);
                     break;
                 default:
@@ -499,18 +496,17 @@ class MainMenuCommand extends BaseVKCommand
         if(self::CANCELED != $this->message)
         {
             if ($this->message == 1) {
-                $newsProject = $this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES ? User::NOTIFICATIONS_NO : User::NOTIFICATIONS_YES;
-                User::where('id', $this->user['id'])->update(['notifications' => json_encode(['schedule' => 0, 'news_project' => $newsProject, 'broadcasting' => 0])]);
-                UserRepository::instance()->editNotifications($this->user['user_id'], Service::VK);
-                $this->user['notifications']['news_project'] = $newsProject;
-                if($this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES)
+                $call = $this->user['call'] == 0 ? 1 : 0;
+                User::where('id', $this->user['id'])->update(['call' => $call]);
+                UserRepository::instance()->editCall($this->user['user_id'], Service::VK);
+                if($call == 0)
                     $n1 = 'включили';
                 else
                     $n1 = 'выключили';
-                $this->text = "Вы успешно " . $n1 . " рассылку на \xF0\x9F\x93\xB0 Новости проекта\n\n" . $this->view();
+                $this->text = "Вы успешно " . $n1 . " рассылку на \xF0\x9F\x93\x85 Расписание\n\n" . $this->view();
             } else {
-                $this->text = "Нет такой команды [Пришли мне цифру]\n*******************\n\xF0\x9F\x93\xB0 Новости проекта\n\n";
-                if($this->user[User::NOTIFICATIONS][User::NOTIFICATIONS_NEWS_PROJECT] == User::NOTIFICATIONS_YES)
+                $this->text = "Нет такой команды [Пришли мне цифру]\n*******************\n\xF0\x9F\x93\x85 Расписание\n\n";
+                if($this->user['call'] == 0)
                 {
                     $n1 = 'включена';
                     $n2 = 'Выключить';
@@ -522,7 +518,7 @@ class MainMenuCommand extends BaseVKCommand
                     $n2 = 'Включить';
                     $n3 = "\xE2\x9C\x85";
                 }
-                $this->text .= "\xF0\x9F\x93\xA2 Сейчас твоя рассылка на новости проекта ".$n1.".\n\n1. ".$n3." ".$n2."\n\nОтправьте цифру 1 если вы хотите ".mb_strtolower($n2)." рассылку.\nДля выхода отправьте цифру 100.";
+                $this->text .= "\xF0\x9F\x93\xA2 Сейчас твоя рассылка ".$n1.".\n\n1. ".$n3." ".$n2."\n\nОтправьте цифру 1 если вы хотите ".mb_strtolower($n2)." рассылку.\nДля выхода отправьте цифру 100.";
                 $this->user = UserRepository::instance()->addCommand($this->user['user_id'], Service::VK, self::MAIN_MENU_NOTIFICATIONS_SELECT_USER, User::NOTIFICATIONS_NEWS_PROJECT_ID);
             }
         }
